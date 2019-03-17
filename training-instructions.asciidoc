@@ -1,0 +1,19 @@
+:toc: macro
+toc::[]
+
+== Introduction
+
+- link:order-service.asciidoc[Order Service Design]
+
+== Training Instructions
+
+- link:devonfw-intro.asciidoc[devonfw intro]
+- link:devon4j-overview.asciidoc[devon4j overview]
+- link:an-devon4j-application.asciidoc[An devon4j application]
+- link:build-devon4j-application.asciidoc[Build your own devon4j application]
+- link:devon4j-components.asciidoc[devon4j application components]
+- link:devon4j-layers.asciidoc[devon4j layers]
+- link:order-service-dataaccess-layer.asciidoc[Next chapter: Order Service - Data Access Layer]
+- link:order-service-logic-layer.asciidoc[Next chapter: Order Service - Business Logic Layer]
+- link:order-service-services-layer.asciidoc[Next chapter: Order Service - Services Layer]
+- link:order-service-security.asciidoc[Next chapter: Order Service - Security]

@@ -1,1 +1,13 @@
-# Devonfw Java Backend Training - Lab Instructions
+:toc: macro
+toc::[]
+
+= Devonfw Java Backend Training - Lab Instructions
+
+== Order Service
+
+- link:order-service.asciidoc[Order Service Design]
+
+== Training Instructions
+
+- link:preparation.asciidoc[Preparation for the training]
+- link:training-instructions.asciidoc[devon4j Getting Started]

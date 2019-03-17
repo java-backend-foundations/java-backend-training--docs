@@ -1,0 +1,6 @@
+:toc: macro
+toc::[]
+
+= Preparation
+
+TODO: preparation instructions (free of Capgemini specifics)

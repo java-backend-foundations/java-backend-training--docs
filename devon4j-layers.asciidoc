@@ -1,0 +1,336 @@
+:toc: macro
+toc::[]
+
+= devon4j component layers
+
+As we already mentioned in the link:devon4j-overview.asciidoc#devon4j-architecture-overview[introduction to devon4j] the components of our _Java_ backend apps will be divided in three layers: _service_, _logic_ and _dataaccess_.
+
+* _Service_ Layer: will contain the REST services to exchange information with the client applications.
+
+* _Logic_ Layer: the layer in charge of hosting the logic of the application (validations, authorization control, business logic, etc.).
+
+* _Data Access_ Layer: the layer to communicate with the data base.
+
+
+== Layers implementation
+
+image::images/devon4j/5.Layers/dependency_injection.png[,width="250", link="images/devon4j/5.Layers/dependency_injection.png"]
+
+Following the https://github.com/devonfw/devon4j/wiki/guide-dependency-injection[devon4j recommendations] for _Dependency Injection_ in MyThaiStar's layers we will find:
+
+- Separation of API and implementation: Inside each layer we will separate the elements in different packages: _api_ and _impl_. The _api_ will store the _interface_ with the methods definition and inside the _impl_ we will store the class that implements the _interface_.
+
+image::images/devon4j/5.Layers/layer_api_impl.png[, link="images/devon4j/5.Layers/layer_api_impl.png"]
+
+- Usage of JSR330: The Java standard set of annotations for _dependency injection_ (`@Named`, `@Inject`, `@PostConstruct`, `@PreDestroy`, etc.) provides us with all the needed annotations to define our beans and inject them.
+
+[source, java]
+----
+@Named
+public class MyBeanImpl implements MyBean {
+  @Inject
+  private MyOtherBean myOtherBean;
+
+  @PostConstruct
+  public void init() {
+    // initialization if required (otherwise omit this method)
+  }
+
+  @PreDestroy
+  public void dispose() {
+    // shutdown bean, free resources if required (otherwise omit this method)
+  }
+}
+----
+
+=== Communication between layers
+
+The communication between layers is solved using the described _Dependency Injection_ pattern, based on _Spring_ and the _Java_ standards: _java.inject_ (JSR330) combined with JSR250.
+
+image::images/devon4j/5.Layers/layers_impl.png[, link="images/devon4j/5.Layers/layers_impl.png"]
+
+==== Service layer - Logic layer
+[source,java]
+----
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import io.oasp.application.mtsj.bookingmanagement.logic.api.Bookingmanagement;
+
+@Named("BookingmanagementRestService")
+public class BookingmanagementRestServiceImpl implements BookingmanagementRestService {
+
+  @Inject
+  private Bookingmanagement bookingmanagement;
+
+  @Override
+  public BookingCto getBooking(long id) {
+    return this.bookingmanagement.findBooking(id);
+  }
+
+  ...
+
+}
+----
+
+==== Logic layer - Data Access layer
+
+[source,java]
+----
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import io.oasp.application.mtsj.bookingmanagement.dataaccess.api.dao.BookingDao;
+
+@Named
+public class BookingmanagementImpl extends AbstractComponentFacade implements Bookingmanagement {
+
+  @Inject
+  private BookingDao bookingDao;
+
+  @Override
+  public boolean deleteBooking(Long bookingId) {
+
+    BookingEntity booking = this.bookingDao.find(bookingId);
+    this.bookingDao.delete(booking);
+    return true;
+  }
+
+  ...
+
+}
+----
+
+
+=== Service layer
+
+As we mentioned at the beginning, the _Service_ layer is where the services of our application (REST or SOAP) will be located.
+
+In _devon4j_ applications the default implementation for web services is based on http://cxf.apache.org/[Apache CXF], a services framework for Java apps that supports web service standards like _SOAP_ (implementing https://en.wikipedia.org/wiki/Java_API_for_XML_Web_Services[JAX-WS]) and _REST_ services (https://en.wikipedia.org/wiki/Java_API_for_RESTful_Web_Services[JAX-RS]).
+
+In this tutorial we are going to focus only in the _REST_ implementation of the services.
+
+==== Service definition
+
+The services definition is done by the service _interface_ located in the `service.api.rest` package. In the _boooking_ component of _My Thai Star_ application we can see a service definition statement like the following
+
+
+[source,java]
+----
+@Path("/bookingmanagement/v1")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
+public interface BookingmanagementRestService {
+
+  @GET
+  @Path("/booking/{id}/")
+  public BookingCto getBooking(@PathParam("id") long id);
+
+  ...
+
+}
+----
+
+*JAX-RS annotations*:
+
+- _@Path_: defines the common path for all the resources of the service.
+
+- _@Consumes_ and _@Produces_: declares the type of data that the service expects to receive from the client and the type of data that will return to the client as response.
+
+- _@GET_: annotation for _HTTP_ _get_ method.
+
+- _@Path_: the path definition for the _getBooking_ resource.
+
+- _@PathParam_: annotation to configure the _id_ received in the _url_ as a parameter.
+
+
+
+
+==== Service implementation
+
+The service implementation is a class located in the `service.impl.rest` package that implements the previous defined interface.
+
+[source,java]
+----
+@Named("BookingmanagementRestService")
+public class BookingmanagementRestServiceImpl implements BookingmanagementRestService {
+
+  @Inject
+  private Bookingmanagement bookingmanagement;
+
+  @Override
+  public BookingCto getBooking(long id) {
+
+    return this.bookingmanagement.findBooking(id);
+  }
+
+  ...
+}
+----
+
+As you can see this layer simply delegates in the _logic_ layer to resolve the app requirements regarding business logic.
+
+=== Logic layer
+
+In this layer we will store all the custom implementations to resolve the requirements of our applications. Including:
+
+- business logic.
+
+- Delegation of the https://en.wikipedia.org/wiki/Business_transaction_management[transaction management] to Spring framework.
+
+- object mappings.
+
+- validations.
+
+- authorizations.
+
+Within the _logic_ layer we must avoid including code related to services or data access, we must delegate those tasks in the suitable layer.
+
+
+==== Logic layer definition
+
+As in the _service_ layer, the logic implementation will be defined by an interface located in a `logic.api` package.
+
+[source,java]
+----
+public interface Bookingmanagement {
+
+  BookingCto findBooking(Long id);
+
+  ...
+}
+----
+
+==== Logic layer implementation
+
+In a `logic.impl` package a _Impl_ class will implement the interface of the previous section.
+
+[source,java]
+----
+@Named
+@Transactional
+public class BookingmanagementImpl extends AbstractComponentFacade implements Bookingmanagement {
+
+  /**
+   * Logger instance.
+   */
+  private static final Logger LOG = LoggerFactory.getLogger(BookingmanagementImpl.class);
+
+  /**
+   * @see #getBookingDao()
+   */
+  @Inject
+  private BookingDao bookingDao;
+
+  /**
+   * The constructor.
+   */
+  public BookingmanagementImpl() {
+
+    super();
+  }
+
+  @Override
+  public BookingCto findBooking(Long id) {
+
+    LOG.debug("Get Booking with id {} from database.", id);
+    BookingEntity entity = getBookingDao().findOne(id);
+    BookingCto cto = new BookingCto();
+    cto.setBooking(getBeanMapper().map(entity, BookingEto.class));
+    cto.setOrder(getBeanMapper().map(entity.getOrder(), OrderEto.class));
+    cto.setInvitedGuests(getBeanMapper().mapList(entity.getInvitedGuests(), InvitedGuestEto.class));
+    cto.setOrders(getBeanMapper().mapList(entity.getOrders(), OrderEto.class));
+    return cto;
+  }
+
+  public BookingDao getBookingDao() {
+    return this.bookingDao;
+  }
+
+  ...
+}
+----
+
+In the above _My Thai Star_ logic layer example we can see:
+
+- business logic and/or https://github.com/devonfw/devon4j/wiki/guide-beanmapping[object mappings].
+
+- Delegation of the transaction management through the Spring's `@Transactional` annotation.
+
+=== Transfer objects
+
+In the code examples of the _logic_ layer section you may have seen a _BookingCto_ object. This is one of the https://github.com/devonfw/devon4j/wiki/guide-transferobject[Transfer Objects] defined in _devon4j_ to be used as transfer data element between layers.
+
+Main benefits of using _TO's_:
+
+- Avoid inconsistent data (when entities are sent across the app changes tend to take place in multiple places).
+
+- Define how much data to transfer (relations lead to transferring too much data).
+
+- Hide internal details.
+
+In _devon4j_ we can find two different _Transfer Objects:
+
+==== Entity Transfer Object (ETO)
+
+- Same data-properties as entity.
+
+- No relations to other entities.
+
+- Simple and solid mapping.
+
+==== Composite Transfer Object(CTO)
+
+- No data-properties at all.
+
+- Only relations to other TOs.
+
+- 1:1 as reference, else Collection(List) of TOs.
+
+- Easy to manually map reusing ETO's and CTO's.
+
+
+=== Data Access layer
+
+The third, and last, layer of the _devon4j_ architecture is the one responsible for store all the code related to connection and access to data base.
+
+For mapping java objects to the data base _devon4j_ use the http://www.oracle.com/technetwork/java/javaee/tech/persistence-jsp-140049.html[Java Persistence API(JPA)]. And as _JPA_ implementation _devon4j_ use http://hibernate.org/orm/[hibernate].
+
+Apart from the _Entities_ of the component, in the _dataaccess_ layer we are going to find the same elements that we saw in the other layers: definition (an _interface_) and implementation (a class that implements that interface).
+
+However, in this layer the implementation is slightly different, the `[Target]DaoImpl` extends `general.dataaccess.base.dao.ApplicationDaoImpl` that provides us (through `io.oasp.module.jpa`) with the basic implementation _dataaccess_ methods: `save(Entity)`, `findOne(id)`, `findAll(ids)`, `delete(id)`, etc.
+
+Because of that, in the `[Target]DaoImpl` implementation of the layer we only need to add the _custom_ methods that are not implemented yet. Following the _My Thai Star_ component example (_bookingmanagement_) we will find only the paginated _findBookings_ implementation.
+
+==== Data Access layer definition
+
+[source,java]
+----
+public interface BookingDao extends ApplicationDao<BookingEntity> {
+  PaginatedListTo<BookingEntity> findBookings(BookingSearchCriteriaTo criteria);
+}
+----
+
+==== Data Access layer implementation
+
+[source,java]
+----
+@Named
+public class BookingDaoImpl extends ApplicationDaoImpl<BookingEntity> implements BookingDao {
+
+  @Override
+  public PaginatedListTo<BookingEntity> findBookings(BookingSearchCriteriaTo criteria) {
+
+    BookingEntity booking = Alias.alias(BookingEntity.class);
+    EntityPathBase<BookingEntity> alias = Alias.$(booking);
+    JPAQuery query = new JPAQuery(getEntityManager()).from(alias);
+
+    ...
+
+  }
+}
+----
+
+The implementation of the _findBookings_ uses http://www.querydsl.com/[queryDSL] to manage the dynamic queries.
+
+=== link:order-service-dataaccess-layer.asciidoc[Next chapter: Order Service - Data Access Layer]

@@ -1,0 +1,84 @@
+:toc: macro
+toc::[]
+
+= Components
+
+== devon4j Components
+
+image::images/devon4j/4.Components/devon4j_architecture.png[width="450", link="images/devon4j/4.Components/devon4j_architecture.png"]
+
+When working with _devon4j_ the recommended approach for the design of the applications is the _Component Oriented Design_. Each component will represent a significant part (or feature) of our application related to _CRUD_ operations. Internally, the components will be divided in three layers (_service_, _logic_, and _dataaccess_) and will communicate in two directions: service with database or, in the _logic_ layer, a component with other component.
+
+=== Principles
+
+The benefits of dividing our application in components are:
+
+- https://en.wikipedia.org/wiki/Separation_of_concerns[Separation of concerns].
+
+- https://en.wikipedia.org/wiki/Reusability[Reusability].
+
+- Avoid https://en.wikipedia.org/wiki/Redundant_code[redundant code].
+
+- https://en.wikipedia.org/wiki/Information_hiding[Information hiding].
+
+- Self contained, descriptive and stable component APIs.
+
+- Data consistency, a component is responsible for its data and changes to this data shall only happen via the component.
+
+== devon4j component example
+
+_My Thai Star_ is an application of a restaurant that allows *booking* tables, and *order* different *dishes* so the main _devon4j_ components are:
+
+image::images/devon4j/4.Components/mythaistar_components.png[width="250", link="images/devon4j/4.Components/mythaistar_components.png"]
+
+- dishmanagement: This component will manage the dishes information retrieving it from the db and serving it to the client. It also could be used to create new menus.
+
+- bookingmanagement: Manages the booking part of the application. With this component the users (anonymous/logged in) can create new reservations or cancel an existing reservation. The users with waiter role can see all scheduled reservations.
+
+- ordermanagement: This component handles the process to order dishes (related to reservations). A user (as a host or as a guest) can create orders (that contain dishes) or cancel an existing one. The users with waiter role can see all ordered orders.
+
+- usermanagement: Takes care of the User Profile management, allowing to create and update the data profiles.
+
+Apart from that components we will have other _packages_ for the cross-cutting concerns:
+
+- general: is a package that stores the common elements or configurations of the app, like _security_, _cxf services_ or _object mapping_ configurations.
+
+- imagemanagement: in case of functionalities that will be used in several components, instead of duplicate the functionality (code) we can extract it to a component that the other components will consume. In the case of the images, as both _dishmanagement_ and _usermanagement_ components are going to need to manage images, this _imagecomponent_ will be used for that purpose.
+
+- mailservice: with this service we will provide the functionality for sending email notifications. This is a shared service between different app components such as _bookingmanagement_ or _ordercomponent_.
+
+=== devon4j component structure
+
+The component will be formed by one package for each one of the three layers that are defined by the _devon4j_ architecture: _service_, _logic_ and _dataaccess_.
+
+image::images/devon4j/4.Components/mythaistar_component_structure.png[width="250", link="images/devon4j/4.Components/mythaistar_component_structure.png"]
+
+- _Service_ Layer: will expose the REST api to exchange information with client applications.
+
+- _Logic_ Layer: the layer in charge of hosting the business logic of the application.
+
+- _Data Access_ Layer: the layer to communicate with the data base.
+
+Apart from that the components will have a fourth package _common.api_ to store the common elements that will be used by the different layers of the component. This is the place will contain common _interfaces_, constants, exceptions or _enums_.
+
+=== devon4j component core
+
+As we mentioned earlier, each component will be related to a functionality and this functionality will be represented in code by an _Entity_ that will define all the properties needed to wrap the logic of that feature.
+
+This _Entity_, that represents the _core_ of the component, will be located in the `dataaccess.api` package.
+
+The naming convention in _devon4j_ for these entities is
+
+----
+[Target]Entity
+----
+
+The 'Target' should match the name of the related table in the data base, although this is not mandatory.
+
+image::images/devon4j/4.Components/mythaistar_component_core1.png[width="250", link="images/devon4j/4.Components/mythaistar_component_core1.png"]
+
+Basically an _Entity_ is simply a https://en.wikipedia.org/wiki/Plain_old_Java_object[POJO] that will be mapped to a table in the data base, and that reflects each table column with a suitable property.
+
+image::images/devon4j/4.Components/mythaistar_component_core2.png[, link="images/devon4j/4.Components/mythaistar_component_core2.png"]
+
+=== link:devon4j-layers.asciidoc[Next chapter: devon4j Layers]
