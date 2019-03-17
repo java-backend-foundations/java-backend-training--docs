@@ -1,6 +1,3 @@
-:toc: macro
-toc::[]
-
 = Devonfw Java Backend Training - Lab Instructions
 
 == Order Service
