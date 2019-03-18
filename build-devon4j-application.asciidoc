@@ -232,6 +232,7 @@ spring.datasource.url=jdbc:h2:mem:order-service
 
 Please add the _DevTools_ dependency into the `pom.xml` file of the _core_ project
 
+[source,xml]
 ----
 <dependency>
   <groupId>org.springframework.boot</groupId>
