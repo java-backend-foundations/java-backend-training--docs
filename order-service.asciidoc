@@ -3,4 +3,9 @@ toc::[]
 
 = Introduction
 
-TODO: describe the business here
+During the workshop we implement application for management of orders.
+
+Orders are managed by restaurant employees: chief, cook, barkeeper and waiter. Each of them can have different user rights.
+
+Order is created per customer (owner) and contains collection of order positions (items) which are specified by name and price.
+Each order has a status defining, what's happening with the order, f.e. NEW, PREPARING, PAID.
