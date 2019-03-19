@@ -125,7 +125,7 @@ You can provide your own data or use script which can be found here.
 
 Run application and check that the data you provided is inserted into the database.
 
-=== The core of the components
+=== Entities
 Now that we have defined the data base for our entities is the moment to start creating the code of the related components.
 
 We are going to create entities with it's interfaces in new package _orderservice_ which will contain all objects specific for our application.
@@ -247,5 +247,156 @@ public Set<OrderEntity> getOrders() {
 ----
 
 Run application and check that schema from database maps correctly into entities model.
+
+=== Repositories
+
+To perform operations on our entities we need to create repositories for each of them. They will contain operations specific for each of the objects.
+
+==== ItemRepository
+
+In component order-service-core, create package com.devonfw.app.java.order.orderservice.dataaccess.api.repo. We will place there all our repositories.
+
+Create interface _ItemRepository_. It should extend _DefaultRepository_ from JPA which contains generic operations for entities.
+[code,java]
+----
+public interface ItemRepository extends DefaultRepository<ItemEntity> {
+----
+
+==== ItemRepositoryTest
+
+With such repository we can already perform basic CRUD operations, f.e. save, deleteById, findById.
+
+We will test the behaviour of Repository methods using unit tests.
+
+In source folder src/test/java of component order-service-core create same package as for interface.
+
+Create there class _ItemRepositoryTest_
+[code,java]
+----
+@SpringBootTest( webEnvironment = WebEnvironment.DEFINED_PORT)
+public class ItemRepositoryTest extends ComponentTest {
+----
+
+DEFINED_PORT is used to connect to H2 console always on the specified port.
+We need to adjust application.properties of src/test/resources/config.
+
+- Enable there h2 console
+- Adjust spring.datasource.url to be same as for our application
+- Define server.port as different than for application.
+- Look at spring.flyway.locations. It calls migration of data for each of test runs. We leave it for now to start with the filled database.
+
+Functionality of ComponentTest will be described later.
+
+===== FindAll test
+
+Let's write our first test - we would like to find all items. We will use for it JpaRepository.findAll() method which is available in _ItemRepository_ thanks to inheritance of DefaultRepository.
+
+- inject _ItemRepository_ to test class.
+- prepare public method annotated with _@Test_
+- call there _ItemRepository.findAll()_ method
+- check that number of found elements is same as number of elements created in your migration.
+
+[code,java]
+----
+@SpringBootTest( webEnvironment = WebEnvironment.DEFINED_PORT)
+public class ItemRepositoryTest extends ComponentTest {
+
+	@Inject
+	private ItemRepository itemRepository;
+
+	@Test
+	public void shouldFindAllItems() {
+		// when
+		List<ItemEntity> foundItems = itemRepository.findAll();
+
+		// then
+		assertThat(foundItems).hasSize(3);
+	}
+----
+
+Run test
+
+To check that items from migrations are really in the tested database, create a breakpoint in the test. It will pause the
+
+Congratulations, you wrote your first unit test!
+
+==== JPAQuery
+
+QueryDSL allows us to write query which can be suitable for many use cases.
+
+Create search criteria object which will contain all arguments used in this query. Place it on order-service-api in package com.devonfw.app.java.order.orderservice.logic.api.to
+_ItemSearchCriteriaTo_ has to contain all business attributes of _ItemEntity_.
+Additionally we add there _StringSearchConfigTo_ for each of the string attributes to be able to create also LIKE expressions.
+
+[code,java]
+----
+public class ItemSearchCriteriaTo extends AbstractTo {
+
+	private String name;
+	private String description;
+	private Double price;
+	private StringSearchConfigTo nameOption;
+	private StringSearchConfigTo descriptionOption;
+  private Pageable pageable;
+----
+
+Implement getters and setters for all attributes.
+
+Go back to the _ItemRepository_. Implement there findByCriteria method using JPAQuery.
+[code,java]
+----
+default Page<ItemEntity> findByCriteria(ItemSearchCriteriaTo criteria) {
+
+  ItemEntity alias = newDslAlias();
+  JPAQuery<ItemEntity> query = newDslQuery(alias);
+
+  String name = criteria.getName();
+  if (name != null && !name.isEmpty()) {
+    QueryUtil.get().whereString(query, $(alias.getName()), name, criteria.getNameOption());
+  }
+
+  // TODO: implement also expression for description and price
+
+  // TODO: implement also sorting using addOrderBy
+
+  // TODO: return found items using QueryUtil
+}
+----
+
+Test the solution you created.
+
+==== Repositories with CobiGen
+
+For OrderEntity and CustomerEntity we will generate SeachCriteria and Repositories using CobiGen.
+Right click on each of the entities, generate with CobiGen. Mark there TO's ans SpringRepository.
+Click Customize (right down corner of objects generated) and untick TO object (CustomerTo).
+
+Compare generated repositories to your own.
+
+==== Business functionality
+
+Implement given queries together with unit tests.
+
+- Find item entities where name is like given argument (case insensitive). Sort result by name ascending - use search criteria query.
+- Find orders from given day with specific status - create SpringData query.
+- Remove Customer by id.
+- Create Order with two order positions and owner set.
+- Update item with given name changing it's price.
+
+[code,java]
+----
+@Override
+protected void doTearDown() {
+  super.doTearDown();
+  this.itemRepository.deleteAll();
+}
+----
+
+[code,bash]
+----
+spring.flyway.locations=classpath:db/type/h2
+----
+
+
 
 === link:order-service-logic-layer.asciidoc[Next chapter: Order Service - Business Logic Layer]
