@@ -141,7 +141,7 @@ For each of them generate getters and setters (right click in ItemEntity -> Sour
 
 Mark table with @Entity annotation and set also table name which should be mapped to this object.
 
-[code,java]
+[source,java]
 ----
 @Entity(name="Item")
 public class ItemEntity {
@@ -151,7 +151,7 @@ Generate interface and class hierarchy for _ItemEntity_ using CobiGen.
 
 Choose Entity Infrastructure and click finish.
 
-[code,java]
+[source,java]
 ----
 @Entity(name="Item")
 public class ItemEntity extends ApplicationPersistenceEntity implements Item {
@@ -160,7 +160,7 @@ public class ItemEntity extends ApplicationPersistenceEntity implements Item {
 _ItemEntity_ extends now _ApplicationPersistenceEntity_ which has attributes id and modificationCounter needed for all our entities. Each of the entities should inherit from this class.
 
 Check implementation of _ApplicationPersistenceEntity_,
-[code,java]
+[source,java]
 ----
 @Override
 @Id
@@ -195,7 +195,7 @@ Generate  _Item_ interface for the entity same way we did it for _ItemEntity_.
 ==== OrderEntity
 
 In component order-service-api com.devonfw.app.java.order.orderservice.common.api create _OrderStatus_ enum which will be used as status in _OrderEntity_.
-[code,java]
+[source,java]
 ----
 public enum OrderStatus {
 	NEW, PREPARING, PREPARED, SERVED, PAID, CANCELLED
@@ -210,7 +210,7 @@ Generate  _Order_ interface for the entity.
 Above getters add needed annotations:
 
 - As default, enum values are saved as Integer in the database. To have it's value as String, change is needed:
-[code,java]
+[source,java]
 ----
 @Enumerated(EnumType.STRING)
 public OrderStatus getStatus() {
@@ -218,16 +218,16 @@ public OrderStatus getStatus() {
 }
 ----
 - Add mapping for relation to _CustomerEntity_:
-[code,java]
+[source,java]
 ----
 @ManyToOne
-	@JoinColumn(name = "ownerId")
-	public CustomerEntity getOwner() {
-		return owner;
-	}
+@JoinColumn(name = "ownerId")
+public CustomerEntity getOwner() {
+    return owner;
+}
 ----
 - Add mapping for relation to _ItemEntity_:
-[code,java]
+[source,java]
 ----
 @ManyToMany
 @JoinTable(name = "OrderPosition", joinColumns = @JoinColumn(name = "orderId", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "itemId", referencedColumnName = "id"))
@@ -238,7 +238,7 @@ public Set<ItemEntity> getOrderPositions() {
 - Check method getOwnerId, it is marked with @Transient annotation to not map owner twice (since we have relation specified also by getOwner() method)
 
 Adjust _CustomerEntity_ and add there relation to _OrderEntity_ with annotation showing that this relation is mapped only in OrderSummary table.
-[code,java]
+[source,java]
 ----
 @OneToMany(mappedBy = "owner")
 public Set<OrderEntity> getOrders() {
@@ -257,7 +257,7 @@ To perform operations on our entities we need to create repositories for each of
 In component order-service-core, create package com.devonfw.app.java.order.orderservice.dataaccess.api.repo. We will place there all our repositories.
 
 Create interface _ItemRepository_. It should extend _DefaultRepository_ from JPA which contains generic operations for entities.
-[code,java]
+[source,java]
 ----
 public interface ItemRepository extends DefaultRepository<ItemEntity> {
 ----
@@ -271,7 +271,7 @@ We will test the behaviour of Repository methods using unit tests.
 In source folder src/test/java of component order-service-core create same package as for interface.
 
 Create there class _ItemRepositoryTest_
-[code,java]
+[source,java]
 ----
 @SpringBootTest( webEnvironment = WebEnvironment.DEFINED_PORT)
 public class ItemRepositoryTest extends ComponentTest {
@@ -296,7 +296,7 @@ Let's write our first test - we would like to find all items. We will use for it
 - call there _ItemRepository.findAll()_ method
 - check that number of found elements is same as number of elements created in your migration.
 
-[code,java]
+[source,java]
 ----
 @SpringBootTest( webEnvironment = WebEnvironment.DEFINED_PORT)
 public class ItemRepositoryTest extends ComponentTest {
@@ -328,7 +328,7 @@ Create search criteria object which will contain all arguments used in this quer
 _ItemSearchCriteriaTo_ has to contain all business attributes of _ItemEntity_.
 Additionally we add there _StringSearchConfigTo_ for each of the string attributes to be able to create also LIKE expressions.
 
-[code,java]
+[source,java]
 ----
 public class ItemSearchCriteriaTo extends AbstractTo {
 
@@ -343,7 +343,7 @@ public class ItemSearchCriteriaTo extends AbstractTo {
 Implement getters and setters for all attributes.
 
 Go back to the _ItemRepository_. Implement there findByCriteria method using JPAQuery.
-[code,java]
+[source,java]
 ----
 default Page<ItemEntity> findByCriteria(ItemSearchCriteriaTo criteria) {
 
@@ -383,7 +383,7 @@ Implement given queries together with unit tests.
 - Create Order with two order positions and owner set.
 - Update item with given name changing it's price.
 
-[code,java]
+[source,java]
 ----
 @Override
 protected void doTearDown() {
@@ -392,7 +392,7 @@ protected void doTearDown() {
 }
 ----
 
-[code,bash]
+[source,bash]
 ----
 spring.flyway.locations=classpath:db/type/h2
 ----
