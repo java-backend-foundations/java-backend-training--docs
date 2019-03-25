@@ -92,7 +92,7 @@ Basing on _Item_ table provide also _OrderSummary_ table with attributes as foll
 
 We set also constraints:
 - primary key for id to take care of it's uniqueness.
-- foreign key to the_Customer_ table for column _ownerId_
+- foreign key to the _Customer_ table for column _ownerId_
 
 Types and specific column names are shown in the diagram.
 
@@ -177,6 +177,7 @@ public int getModificationCounter() {
   return this.modificationCounter;
 }
 ----
+
 - @Id shows that this attribute will be the identifier of the entity. It is used by JPA to identify entity.
 - @GeneratedValue shows that values for id will be automatically generated
 - @Version defines modificationCounter attribute as version counter.
@@ -210,6 +211,7 @@ Generate  _Order_ interface for the entity.
 Above getters add needed annotations:
 
 - As default, enum values are saved as Integer in the database. To have it's value as String, change is needed:
++
 [source,java]
 ----
 @Enumerated(EnumType.STRING)
@@ -218,15 +220,17 @@ public OrderStatus getStatus() {
 }
 ----
 - Add mapping for relation to _CustomerEntity_:
++
 [source,java]
 ----
 @ManyToOne
 @JoinColumn(name = "ownerId")
 public CustomerEntity getOwner() {
-    return owner;
+  return owner;
 }
 ----
 - Add mapping for relation to _ItemEntity_:
++
 [source,java]
 ----
 @ManyToMany
@@ -301,17 +305,17 @@ Let's write our first test - we would like to find all items. We will use for it
 @SpringBootTest( webEnvironment = WebEnvironment.DEFINED_PORT)
 public class ItemRepositoryTest extends ComponentTest {
 
-	@Inject
-	private ItemRepository itemRepository;
+  @Inject
+  private ItemRepository itemRepository;
 
-	@Test
-	public void shouldFindAllItems() {
-		// when
-		List<ItemEntity> foundItems = itemRepository.findAll();
+  @Test
+  public void shouldFindAllItems() {
+    // when
+    List<ItemEntity> foundItems = itemRepository.findAll();
 
-		// then
-		assertThat(foundItems).hasSize(3);
-	}
+    // then
+    assertThat(foundItems).hasSize(3);
+  }
 ----
 
 Run test
@@ -332,11 +336,11 @@ Additionally we add there _StringSearchConfigTo_ for each of the string attribut
 ----
 public class ItemSearchCriteriaTo extends AbstractTo {
 
-	private String name;
-	private String description;
-	private Double price;
-	private StringSearchConfigTo nameOption;
-	private StringSearchConfigTo descriptionOption;
+  private String name;
+  private String description;
+  private Double price;
+  private StringSearchConfigTo nameOption;
+  private StringSearchConfigTo descriptionOption;
   private Pageable pageable;
 ----
 
@@ -392,11 +396,10 @@ protected void doTearDown() {
 }
 ----
 
-[source,bash]
+
+[source,properties]
 ----
 spring.flyway.locations=classpath:db/type/h2
 ----
-
-
 
 === link:order-service-logic-layer.asciidoc[Next chapter: Order Service - Business Logic Layer]
