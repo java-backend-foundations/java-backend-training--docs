@@ -2,3 +2,42 @@
 toc::[]
 
 = Order Service -Security
+
+In this chapter we are going to configure authorization for our services. We will learn how to create permission and roles, how to grant theme and how to apply permisions to business logic.
+
+== Basic configuration
+
+As mentioned at the beginning of this course basic configuration is already created. It was done at the very begining during creation of application from archetype. You can find it in a classes:
+[source,java]
+----
+com.devonfw.app.java.order.general.service.impl.config.BaseWebSecurityConfig
+com.devonfw.app.java.order.general.common.impl.security.BaseUserDetailsService
+----
+
+As you can see in a first file there are some users configured already.
+
+== Authorization
+
+Configuration of authorization can be done in two ways - Access Control Config (new way) or Access Control Schema (old method).
+
+=== Access Control Config
+In first method simply extend AccessControlConfig to configure your access control objects as code and reference it from your use-cases. In our application you can find it under:
+----
+com.devonfw.app.java.order.general.common.api.security.ApplicationAccessControlConfig
+----
+
+=== Access Control Schema
+In this method file access-control-schema.xml is used to define the mapping from groups to permissions. You are defining all typer and later on using cobigen you are able co configure PermissionConstants files to use it in your implementation.
+
+More details can be found under:
+https://github.com/devonfw/devon4j/wiki/guide-access-control
+
+== Exercises
+
+* Prepare permissions for your business logic using Access Control Config method.
+** Please use inheritance of permissions.
+* In the class OrderserviceImpl use the @RolesAllowed annotation and the new permissions to grant access to the desired group of users
+* Run application and check if everything works. If there is a forbidden message for appropriate operations while for allowed you can execute theme.
+
+Hints: In more developed applications there will be some module like UserManagement which allow to receive roles for appropriate user. Since we have not such module we need to use simple solution. When you see method getRoles in class BaseUserDetailsService then you will notice that currently all user have only one role with same name as user name.
+You have two options. Prepare roles appropriate to this implementation or modify getRoles implementation to use roles assigned in BaseWebSecurityConfig. Please note that Spring Security adds automaticly prefix ROLE to all it roles.
