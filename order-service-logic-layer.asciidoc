@@ -11,7 +11,7 @@ This step will contain manual creation and implementation of business logic laye
 
 ==== API definition
 
-First we have to generate proper layer infrastructure. To do so we have define API for following use cases:
+First step is generating proper layer infrastructure. To do so we have to define API for following use cases:
 
 - UcFindItem
 - UcFindCustomer
@@ -20,9 +20,9 @@ First we have to generate proper layer infrastructure. To do so we have define A
 - UcManageCustomer
 - UcManageOrder
 
-As we can see we simply define two type of usecases related to each entity we created.
-Find usecases shall contain all logic related to read operations e.g. Find by id, business key, search criterions e.t.c.
-Manage use cases shall contain logic for rest of CRUD functionality which modifies state of our objects and database. For example save, delete or modify methods.
+As we can see we simply define two type of usecases related to each entity we have created.
+Usecases with "Find" in name shall contain all logic related to read operations e.g. Find by id, business key, search criterions e.t.c.
+Usecases with "Manage" in name shall contain logic for the rest of CRUD functionality which modifies state of our objects and database. For example save, delete or modify methods.
 
 Locate each of created interface in proper package:
 [source,java]
@@ -31,11 +31,11 @@ com.devonfw.app.java.order.orderservice.logic.api.usecase
 ----
 
 ==== Implementation
-Now we have to define method API to fulfill logic defined in dataaccess layer. Please locate following logic in proper usecase interfaces:
+Now we have to define method API to fulfill logic defined in dataaccess layer. Please create following logic in proper usecase interfaces:
 
 - increase price of the item with specified name.
 - remove customer by id.
-- create order with two positions and owner specified.
+- create order with two positions and with a specified owner.
 - find orders from given day with specified status.
 - find items by name match (LIKE) ordered by name.
 
@@ -54,7 +54,7 @@ Each of created use case has to be annotated with following annotations:
 @Transactional
 ----
 
-In such created classes we can @Inject our repositories or create abstract class which contains all of mandatory repositories and inherit after that. Here’s example:
+In such created classes we can @Inject our repositories or create abstract class which contains all of mandatory repositories and inherit after that. Hereâ€™s example:
 
 [source,java]
 ----
@@ -74,7 +74,7 @@ public class AbstractOrderUc extends AbstractUc {
 
 ==== Component fasade 
 
-Now we have to define component fasade. Component fasade will be used when we’d like to access logic defined in specific component from another one. Please define it as follow:
+Now we have to define component fasade. Component fasade will be used when weâ€™d like to access logic defined in specific component from another one. Please define it as follow:
 [source,java]
 ----
 public interface Orderservice
@@ -83,7 +83,7 @@ public interface Orderservice
 }
 ----
 
-Implementation of this class contain only redirection of functionality to respective usecases. We expect it to have following structure:
+Implementation of this class contains only redirection of functionality to respective usecases. We expect it to have following structure:
 
 [source,java]
 ----
@@ -106,7 +106,7 @@ public class OrderserviceImpl extends AbstractComponentFacade implements Orderse
 ----
 
 ==== Implementation
-After proper structure definition we have to implement logic itself. Please define proper methods in respective use cases (if not done already), and implement logic used previously created repository.
+After proper structure definition we have to implement logic itself. Please define proper methods in respective use cases (if not done already), and implement logic using previously created repository.
 Please notice that each repository method returns Entities. In business logic layer we have to convert them to TransportObject using bean mappers defined in AbstractBeanMapperSupport. Each of our Use Case implementation shall contain following tree, so we shall be able to use bean mapper functionality:
 
 image::images/devon4j/10.BusinessLogic/BeanMapperSupport.jpg[width="323", link="images/devon4j/10.BusinessLogic /BeanMapperSupport.jpg"]
@@ -139,16 +139,16 @@ public class UcFindCustomerImpl extends AbstractCustomerUc implements UcFindCust
 
 }
 ----
-Please notice that we are not obligated to use getters for repositories located in AbstractCustomerUc – we can simply @Inject necessary beans to our usecase implementation.
+Please notice that we are not obligated to use getters for repositories located in AbstractCustomerUc â€“ we can simply @Inject necessary beans to our usecase implementation.
 
 == Testing of logic layer
 
 ==== Eto builder generation
 
-At first we shall generate some testdata builders. We can do it from entity level to generate entity data builder or from Eto level.
-For our purposes more we will use Eto. Builder generation can be done by IDE plugins or using CobiGen:
+At first we shall generate some testdata builders. We can do it at entity level to generate entity data builder or at Eto level.
+For our purposes we will use Eto more often. Builder generation can be done by IDE plugins or using CobiGen:
 
-image::images/devon4j/10.BusinessLogic/ EtoBuilderGeneration.jpg[width="798", link="images/devon4j/10.BusinessLogic / EtoBuilderGeneration.jpg"]
+image::images/devon4j/10.BusinessLogic/EtoBuilderGeneration.jpg[width="798", link="images/devon4j/10.BusinessLogic/EtoBuilderGeneration.jpg"]
 
 ==== Testdata preparation
 
@@ -159,7 +159,7 @@ Now we can prepare some testData. Please create interfaces e.g. ItemTestData and
 com.devonfw.app.java.order.orderservice.common.base 
 ----
 
-You can use this interfaces to define builder that can be used later on in testing of the use cases. Here’s some example:
+You can use this interfaces to define builder that can be used later on in testing of the use cases. Hereâ€™s some example:
 
 [source,java]
 ----
@@ -173,7 +173,7 @@ You can use this interfaces to define builder that can be used later on in testi
 
 ==== Testclass definition
 
-In this part we’ll try to create springboot context aware testclasses that will check our businesslogic implementation. For that we’ll use ComponentTest class started without web environment context. We also have to provide some transaction context.
+In this part weâ€™ll try to create springboot context aware testclasses that will check our businesslogic implementation. For that weâ€™ll use ComponentTest class that will be started without web environment context. We also have to provide some transaction context.
 To do so please create class OrderserviceImplTest located:
 [source,java]
 ----
@@ -192,14 +192,14 @@ public class OrderServiceImplTest extends ComponentTest {
   private Orderservice orderService;
 ----
 
-No we can implement some tests. Please provide some valid testcases for each method defined in our UseCases.
+Now we can implement some tests. Please provide some valid testcases for each method defined in our UseCases.
 
 More about testing: https://github.com/devonfw/devon4j/wiki/guide-testing
 
 == Logic layer generation with Cobigen
-Basically we are able to generate whole CRUD use case structures using cobigen. To do that select entity for which we want to generate code and using cobigen select following option:
+Basically we are able to generate whole CRUD use case structure using cobigen. To do that select entity for which we want to generate code and using cobigen select following option:
 
-image::images/devon4j/10.BusinessLogic/ CobigenLogicGeneration.jpg[width="832", link="images/devon4j/10.BusinessLogic / CobigenLogicGeneration.jpg"]
+image::images/devon4j/10.BusinessLogic/CobigenLogicGeneration.jpg[width="832", link="images/devon4j/10.BusinessLogic/CobigenLogicGeneration.jpg"]
 
 It will generate following API with implementation for Find usecase:
 [source,java]
