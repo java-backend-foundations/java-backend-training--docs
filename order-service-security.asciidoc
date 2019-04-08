@@ -34,6 +34,8 @@ https://github.com/devonfw/devon4j/wiki/guide-access-control
 
 == Exercises
 
+. Basic configuration
+
 * Prepare permissions for your business logic using Access Control Config method.
 ** Please use inheritance of permissions.
 * In the class OrderserviceImpl use the @RolesAllowed annotation and the new permissions to grant access to the desired group of users
@@ -41,3 +43,11 @@ https://github.com/devonfw/devon4j/wiki/guide-access-control
 
 Hints: In more developed applications there will be some module like UserManagement which allow to receive roles for appropriate user. Since we have not such module we need to use simple solution. When you see method getRoles in class BaseUserDetailsService then you will notice that currently all user have only one role with same name as user name.
 You have two options. Prepare roles appropriate to this implementation or modify getRoles implementation to use roles assigned in BaseWebSecurityConfig. Please note that Spring Security adds automaticly prefix ROLE to all it roles.
+
+. Try to achieve the same results using old method (access-control-schema)
+. Instead of in memory authentication try to use database
+* Create appropriate migration script which add accounts and roles
+* Change method configureGlobal in class BaseUserDetailsService to use database.
+. Add mechanism which will force to wait a minute after unsuccesfull login to some account
+* Solution can be done in memory.
+* Protection can be done per account - not ip.
