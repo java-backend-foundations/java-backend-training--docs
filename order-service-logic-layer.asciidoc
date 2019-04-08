@@ -108,6 +108,7 @@ public class OrderserviceImpl extends AbstractComponentFacade implements Orderse
 ==== Implementation
 After proper structure definition we have to implement logic itself. Please define proper methods in respective use cases (if not done already), and implement logic used previously created repository.
 Please notice that each repository method returns Entities. In business logic layer we have to convert them to TransportObject using bean mappers defined in AbstractBeanMapperSupport. Each of our Use Case implementation shall contain following tree, so we shall be able to use bean mapper functionality:
+
 image::images/devon4j/10.BusinessLogic/BeanMapperSupport.jpg[width="323", link="images/devon4j/10.BusinessLogic /BeanMapperSupport.jpg"]
 
 Example:
@@ -142,8 +143,62 @@ Please notice that we are not obligated to use getters for repositories located 
 
 == Testing of logic layer
 
+==== Eto builder generation
+
+At first we shall generate some testdata builders. We can do it from entity level to generate entity data builder or from Eto level.
+For our purposes more we will use Eto. Builder generation can be done by IDE plugins or using CobiGen:
+
+image::images/devon4j/10.BusinessLogic/ EtoBuilderGeneration.jpg[width="798", link="images/devon4j/10.BusinessLogic / EtoBuilderGeneration.jpg"]
+
+==== Testdata preparation
+
+Now we can prepare some testData. Please create interfaces e.g. ItemTestData and locate them in following package (test scope):
+
+[source,java]
+----
+com.devonfw.app.java.order.orderservice.common.base 
+----
+
+You can use this interfaces to define builder that can be used later on in testing of the use cases. Here’s some example:
+
+[source,java]
+----
+  /**
+   * The constant CHEESE.
+   */
+  ItemEtoBuilder CHEESE = ItemEtoBuilder.anItemEto()
+      .withName("cheese")
+      .withPrice(12.50);
+----
+
+==== Testclass definition
+
+In this part we’ll try to create springboot context aware testclasses that will check our businesslogic implementation. For that we’ll use ComponentTest class started without web environment context. We also have to provide some transaction context.
+To do so please create class OrderserviceImplTest located:
+[source,java]
+----
+com.devonfw.app.java.order.orderservice.logic.impl 
+----
+
+And define proper annotations:
+
+[source,java]
+----
+@Transactional
+@SpringBootTest(webEnvironment = WebEnvironment.NONE)
+public class OrderServiceImplTest extends ComponentTest {
+
+  @Inject
+  private Orderservice orderService;
+----
+
+No we can implement some tests. Please provide some valid testcases for each method defined in our UseCases.
+
+More about testing: https://github.com/devonfw/devon4j/wiki/guide-testing
+
 == Logic layer generation with Cobigen
 Basically we are able to generate whole CRUD use case structures using cobigen. To do that select entity for which we want to generate code and using cobigen select following option:
+
 image::images/devon4j/10.BusinessLogic/ CobigenLogicGeneration.jpg[width="832", link="images/devon4j/10.BusinessLogic / CobigenLogicGeneration.jpg"]
 
 It will generate following API with implementation for Find usecase:
