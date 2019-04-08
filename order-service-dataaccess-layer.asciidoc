@@ -204,7 +204,7 @@ You can run the application and it should start correctly.
 Next to the _ItemEntity_ create _CustomerEntity_ which should inherit from _ApplicationPersistenceEntity_.
 Prepare attributes as shown in the schema (skip orders attribute until we create OrderEntity).
 Generate getters and setters.
-Generate  _Item_ interface for the entity same way we did it for _ItemEntity_.
+Generate  _Customer_ interface for the entity same way we did it for _ItemEntity_.
 
 ==== OrderEntity
 

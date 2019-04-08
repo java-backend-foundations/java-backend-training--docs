@@ -33,7 +33,14 @@ Learn more about _devonfw_ initialization https://github.com/devonfw/devon/wiki/
 
 After the process is done you should see a new _eclipse-school.bat_ launcher. Execute it and a new _Eclipse_ instance should be opened.
 
-We could use the _eclipse-main.bat_ or the _eclipse-examples.bat_ launchers (that you should see on your distribution's root directory) but we are going to create a new _Eclipse_ launcher related to our new project.
+[NOTE]
+====
+Actually there is a bug in the process of generating the workspace. The Maven configuration contains wrong path to `settings.xml` file. After the Eclipse is started please open the _Preferences_ dialog, go to _Maven > User Settings_, set the correct path to the `settings.xml` placed in your copy of _Devon IDE_ (`conf\.m2\settings.xml`) and push the button _Update Settings_
+
+image::images/devon4j/3.BuildYourOwn/maven-settings.png[width="750", link="images/devon4j/3.BuildYourOwn/maven-settings.png"]
+
+Check whether the _Local Directory_ parameter points to a repository placed in your _Devon IDE_ distribution (`conf\.m2\repository`)
+====
 
 Execute _console.bat_ to get a console initialized with the provided software served in the `software` folder.
 
