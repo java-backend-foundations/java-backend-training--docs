@@ -148,7 +148,7 @@ Please notice that we are not obligated to use getters for repositories located 
 At first we shall generate some testdata builders. We can do it at entity level to generate entity data builder or at Eto level.
 For our purposes we will use Eto more often. Builder generation can be done by IDE plugins or using CobiGen:
 
-image::images/devon4j/10.BusinessLogic/EtoBuilderGeneration.jpg[width="798", link="images/devon4j/10.BusinessLogic/EtoBuilderGeneration.jpg"]
+image::images/devon4j/10.BusinessLogic/EtoBuilderGeneration.JPG[width="798", link="images/devon4j/10.BusinessLogic/EtoBuilderGeneration.JPG"]
 
 ==== Testdata preparation
 
@@ -199,7 +199,7 @@ More about testing: https://github.com/devonfw/devon4j/wiki/guide-testing
 == Logic layer generation with Cobigen
 Basically we are able to generate whole CRUD use case structure using cobigen. To do that select entity for which we want to generate code and using cobigen select following option:
 
-image::images/devon4j/10.BusinessLogic/CobigenLogicGeneration.jpg[width="832", link="images/devon4j/10.BusinessLogic/CobigenLogicGeneration.jpg"]
+image::images/devon4j/10.BusinessLogic/CobigenLogicGeneration.JPG[width="832", link="images/devon4j/10.BusinessLogic/CobigenLogicGeneration.JPG"]
 
 It will generate following API with implementation for Find usecase:
 [source,java]
