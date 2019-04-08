@@ -137,6 +137,7 @@ public class UcFindCustomerImpl extends AbstractCustomerUc implements UcFindCust
   }
 
 }
+----
 Please notice that we are not obligated to use getters for repositories located in AbstractCustomerUc – we can simply @Inject necessary beans to our usecase implementation.
 
 == Testing of logic layer
