@@ -12,6 +12,7 @@ This step will contain manual creation and implementation of business logic laye
 ==== API definition
 
 First we have to generate proper layer infrastructure. To do so we have define API for following use cases:
+
 - UcFindItem
 - UcFindCustomer
 - UcFindOrder
@@ -31,6 +32,7 @@ com.devonfw.app.java.order.orderservice.logic.api.usecase
 
 ==== Implementation
 Now we have to define method API to fulfill logic defined in dataaccess layer. Please locate following logic in proper usecase interfaces:
+
 - increase price of the item with specified name.
 - remove customer by id.
 - create order with two positions and owner specified.
@@ -102,5 +104,95 @@ public class OrderserviceImpl extends AbstractComponentFacade implements Orderse
 }
 				
 ----
+
+==== Implementation
+After proper structure definition we have to implement logic itself. Please define proper methods in respective use cases (if not done already), and implement logic used previously created repository.
+Please notice that each repository method returns Entities. In business logic layer we have to convert them to TransportObject using bean mappers defined in AbstractBeanMapperSupport. Each of our Use Case implementation shall contain following tree, so we shall be able to use bean mapper functionality:
+image::images/devon4j/10.BusinessLogic/BeanMapperSupport.jpg[width="323", link="images/devon4j/10.BusinessLogic /BeanMapperSupport.jpg"]
+
+Example:
+[source,java]
+----
+@Named
+@Validated
+@Transactional
+public class UcFindCustomerImpl extends AbstractCustomerUc implements UcFindCustomer {
+
+  /**
+   * Logger instance.
+   */
+  private static final Logger LOG = LoggerFactory.getLogger(UcFindCustomerImpl.class);
+
+  @Override
+  public CustomerEto findCustomer(long id) {
+    LOG.debug("Get Customer with id {} from database.", id);
+    CustomerEntity foundEntity = getCustomerRepository().getOne(id);
+    return getBeanMapper().map(foundEntity, CustomerEto.class);
+  }
+
+  @Override
+  public Page<CustomerEto> findCustomers(CustomerSearchCriteriaTo criteria) {
+    Page<CustomerEntity> customers = getCustomerRepository().findByCriteria(criteria);
+    return mapPaginatedEntityList(customers, CustomerEto.class);
+  }
+
+}
+Please notice that we are not obligated to use getters for repositories located in AbstractCustomerUc – we can simply @Inject necessary beans to our usecase implementation.
+
+== Testing of logic layer
+
+== Logic layer generation with Cobigen
+Basically we are able to generate whole CRUD use case structures using cobigen. To do that select entity for which we want to generate code and using cobigen select following option:
+image::images/devon4j/10.BusinessLogic/ CobigenLogicGeneration.jpg[width="832", link="images/devon4j/10.BusinessLogic / CobigenLogicGeneration.jpg"]
+
+It will generate following API with implementation for Find usecase:
+[source,java]
+----
+public interface UcFindCustomer {
+
+	/**
+	 * Returns a Customer by its id 'id'.
+	 *
+	 * @param id The id 'id' of the Customer.
+	 * @return The {@link CustomerEto} with id 'id'
+	 */
+	CustomerEto findCustomer(long id);
+
+	/**
+	 * Returns a paginated list of Customers matching the search criteria.
+	 *
+	 * @param criteria the {@link CustomerSearchCriteriaTo}.
+	 * @return the {@link List} of matching {@link CustomerEto}s.
+	 */
+	Page<CustomerEto> findCustomers(CustomerSearchCriteriaTo criteria);
+
+}
+
+----
+
+And Manage usecase:
+
+[source,java]
+----
+	/**
+	 * Deletes a customer from the database by its id 'customerId'.
+	 *
+	 * @param customerId Id of the customer to delete
+	 * @return boolean <code>true</code> if the customer can be deleted,
+	 *         <code>false</code> otherwise
+	 */
+	boolean deleteCustomer(long customerId);
+
+	/**
+	 * Saves a customer and store it in the database.
+	 *
+	 * @param customer the {@link CustomerEto} to create.
+	 * @return the new {@link CustomerEto} that has been saved with ID and version.
+	 */
+	CustomerEto saveCustomer(CustomerEto customer);
+----
+
+
+
 
 === link:order-service-services-layer.asciidoc[Next chapter: Order Service - Services Layer]
