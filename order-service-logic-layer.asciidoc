@@ -3,7 +3,104 @@ toc::[]
 
 = Order Service - Business Logic Layer
 
+In this chapter we are going to create business logic layer for already implemented database queries. We are going to prepare UseCases together with facades and proper component tests.
+
+== Logic layer structure
+
+This step will contain manual creation and implementation of business logic layer. Please have in mind that most of described steps can be done by cobigen, which will be explained later on.
+
+==== API definition
+
+First we have to generate proper layer infrastructure. To do so we have define API for following use cases:
+- UcFindItem
+- UcFindCustomer
+- UcFindOrder
+- UcManageItem
+- UcManageCustomer
+- UcManageOrder
+
+As we can see we simply define two type of usecases related to each entity we created.
+Find usecases shall contain all logic related to read operations e.g. Find by id, business key, search criterions e.t.c.
+Manage use cases shall contain logic for rest of CRUD functionality which modifies state of our objects and database. For example save, delete or modify methods.
+
+Locate each of created interface in proper package:
+[source,java]
+----
+com.devonfw.app.java.order.orderservice.logic.api.usecase 
+----
+
+==== Implementation
+Now we have to define method API to fulfill logic defined in dataaccess layer. Please locate following logic in proper usecase interfaces:
+- increase price of the item with specified name.
+- remove customer by id.
+- create order with two positions and owner specified.
+- find orders from given day with specified status.
+- find items by name match (LIKE) ordered by name.
 
 
+Than create implementation for each of the interfaces and locate them in following package:
+[source,java]
+----
+com.devonfw.app.java.order.orderservice.logic.impl.usecase 
+----
+
+Each of created use case has to be annotated with following annotations:
+[source,java]
+----
+@Named
+@Validated
+@Transactional
+----
+
+In such created classes we can @Inject our repositories or create abstract class which contains all of mandatory repositories and inherit after that. Here’s example:
+
+[source,java]
+----
+public class AbstractOrderUc extends AbstractUc {
+
+	@Inject
+	private OrderRepository orderRepository;
+
+	public OrderRepository getOrderRepository() {
+
+		return this.orderRepository;
+	}
+
+}
+----
+
+
+==== Component fasade 
+
+Now we have to define component fasade. Component fasade will be used when we’d like to access logic defined in specific component from another one. Please define it as follow:
+[source,java]
+----
+public interface Orderservice
+		extends UcFindOrder, UcManageOrder, UcFindCustomer, UcManageCustomer, UcFindItem, UcManageItem {
+
+}
+----
+
+Implementation of this class contain only redirection of functionality to respective usecases. We expect it to have following structure:
+
+[source,java]
+----
+@Named
+public class OrderserviceImpl extends AbstractComponentFacade implements Orderservice {
+
+	@Inject
+	private UcFindOrder ucFindOrder;
+
+	// ...
+
+	@Override
+	public Page<OrderEto> findOrders(OrderSearchCriteriaTo criteria) {
+		return this.ucFindOrder.findOrders(criteria);
+	}
+
+	// ...
+}
+				
+----
 
 === link:order-service-services-layer.asciidoc[Next chapter: Order Service - Services Layer]
