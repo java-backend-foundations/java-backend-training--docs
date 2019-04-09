@@ -270,6 +270,7 @@ public Set<ItemEntity> getOrderPositions() {
 }
 ----
 Adjust _CustomerEntity_ and add there relation to _OrderEntity_ with annotation showing that this relation is mapped only in OrderSummary table.
++
 [source,java]
 ----
 @OneToMany(mappedBy = "owner")
@@ -414,6 +415,7 @@ default Page<ItemEntity> findByCriteria(ItemSearchCriteriaTo criteria) {
 Test the solution you created.
 
 ===== Hints
++
 [source,java]
 ----
 Sort sort = Sort.by("name");
