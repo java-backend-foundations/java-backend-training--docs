@@ -415,7 +415,7 @@ default Page<ItemEntity> findByCriteria(ItemSearchCriteriaTo criteria) {
 Test the solution you created.
 
 ===== Hints
-+
+
 [source,java]
 ----
 Sort sort = Sort.by("name");
