@@ -405,6 +405,13 @@ default Page<ItemEntity> findByCriteria(ItemSearchCriteriaTo criteria) {
 
 Test the solution you created.
 
+===== Hints
+[source,java]
+----
+Sort sort = Sort.by("name");
+Pageable pageable = PageRequest.of(0, 20, sort);
+----
+
 ==== Repositories with CobiGen
 
 For OrderEntity and CustomerEntity we will generate SeachCriteria and Repositories using CobiGen.
