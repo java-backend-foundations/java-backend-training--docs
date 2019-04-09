@@ -11,7 +11,7 @@ The goal of this exercise is to define Rest services (API and implementation) to
 
 == Service Layer definition
 
-At first we have to define interface for our Rest service facade. We start from definition of following the interface OrderserviceRestService located:
+At first we have to define an interface for our Rest service facade. We start with definition of following the interface OrderserviceRestService located:
 
 [source,java]
 ----
@@ -25,7 +25,7 @@ We define implementation respectively: OrderserviceRestServiceImpl in:
 package com.devonfw.app.java.order.orderservice.service.impl.rest
 ----
 
-Than we have to provide proper annotations. On interface we define path of the service (including version), that will be concatenated with default rest service path. We define also contract which defines type of exchanged data. For our case Json is fine:
+Than we have to provide our implementation with proper annotations. On interface we define path of the service (including version), that will be concatenated with default rest service path. We define also contract which defines the type of exchanged data. For our case Json is fine:
 
 [source,java]
 ----
@@ -35,7 +35,7 @@ Than we have to provide proper annotations. On interface we define path of the s
 public interface OrderserviceRestService extends RestService {
 ----
 
-Now we have to provide some CRUD logic for our service. For example if we’d like to expose some basic readById functionality we have to define method annotated as follow:
+Now we have to provide some CRUD logic for our service. For example if weâ€™d like to expose some basic readById functionality we have to define a method annotated as follows:
 
 [source,java]
 ----
@@ -44,15 +44,15 @@ Now we have to provide some CRUD logic for our service. For example if we’d like
 	public Set <ItemEto> findItemByName(@PathParam("name") String name);
 ----
 
-For such defined method we are able to access following url using GET request:
+For a method defined in this way we are able to access following url using GET request:
 [source,java]
 ----
 http://localhost:8081/order-service/services/rest/orderservice/v1/order/items/corn
 ----
 
 
-Please do so using http client e.g. postman https://www.getpostman.com/
-Please also define other functionality that has to be exposed in rest service, having in mind that if we’d like to exchange complex data, we don’t have to define input arguments as {pathVariable}. We can define it simply as method argument:
+Please do so using an http client e.g. postman https://www.getpostman.com/
+Please also define other functionality that has to be exposed in rest service, keeping in mind that if weâ€™d like to exchange complex data, we donâ€™t have to define input arguments as {pathVariable}. We can define it simply as method argument:
 
 [source,java]
 ----
@@ -61,7 +61,7 @@ Please also define other functionality that has to be exposed in rest service, h
 	public OrderCto saveOrder(OrderCto order);
 ----
 
-Now we can implement our services. Simply restservice has to delegate business related action to respective use cases. To do so, we have only to inject Orderservice component facade and delegate logic to proper methods. For example:
+Now we can implement our services. Restservice has to simply delegate business related actions to respective use cases. To do so, we only have to inject Orderservice component facade and delegate our logic to proper methods. For example:
 
 [source,java]
 ----
@@ -70,7 +70,7 @@ public OrderCto saveOrder(OrderCto order) {
 	return this.orderservice.saveOrder(order);
 }
 ----
-Also please have in mind that our OrderserviceRestServiceImpl class has to be properly annotated:
+Also please keep in mind that our OrderserviceRestServiceImpl class has to be properly annotated:
 
 [source,java]
 ----
@@ -80,14 +80,14 @@ public class OrderserviceRestServiceImpl implements OrderserviceRestService {
 
 == Testing of service layer
 
-To properly test implementation of rest service we have to define some subsystem tests. To do so please create test class OrderServiceRestTest located
+To properly test the implementation of rest service we have to define some subsystem tests. To do so please create test class OrderServiceRestTest located
 
 [source,java]
 ----
 com.devonfw.app.java.order.general.service.impl.rest
 ----
 
-Also we shall define some additional test configuration that allows us e.g. to use rest template or create some additional beans such a test helpers e.t.c. This step is optional, but it allows us to structurize a bit our application.
+We shall also define some additional test configuration that allows us e.g. to use rest template or create some additional beans such as test helpers e.t.c. This step is optional, but it allows us to structurize our application a bit.
 
 [source,java]
 ----
@@ -151,7 +151,7 @@ public abstract class AbstractRestServiceTest extends SubsystemTest {
   }
 ----
 
-After such definition of OrderServiceRestTest we shall be able to simply inject some dependencies and perform simplest tests:
+After such definition of OrderServiceRestTest we should be able to simply inject some dependencies and perform the simplest tests:
 [source,java]
 ----
 @RunWith(SpringRunner.class)
