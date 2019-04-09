@@ -1,9 +1,13 @@
-:toc: macro
+﻿:toc: macro
 toc::[]
 
 = Order Service - Business Logic Layer
 
 In this chapter we are going to create business logic layer for already implemented database queries. We are going to prepare UseCases together with facades and proper component tests.
+
+== Goal of exercise:
+
+The goal of this chapter is to implement logic layer for previously defined functionality meaning: Interface / Implementation definition together with tests.
 
 == Logic layer structure
 
