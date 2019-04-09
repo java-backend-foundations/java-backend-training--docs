@@ -330,6 +330,8 @@ Let's write our first test - we would like to find all items. We will use for it
 
 [source,java]
 ----
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+
 @SpringBootTest( webEnvironment = WebEnvironment.DEFINED_PORT)
 public class ItemRepositoryTest extends ComponentTest {
 
@@ -342,7 +344,7 @@ public class ItemRepositoryTest extends ComponentTest {
     List<ItemEntity> foundItems = itemRepository.findAll();
 
     // then
-    assertThat(foundItems).hasSize(3);
+    assertThat(foundItems).hasSize(1);
   }
 ----
 
@@ -364,6 +366,8 @@ Additionally we add there _StringSearchConfigTo_ for each of the string attribut
 
 [source,java]
 ----
+import org.springframework.data.domain.Pageable;
+
 public class ItemSearchCriteriaTo extends AbstractTo {
 
   private String name;
