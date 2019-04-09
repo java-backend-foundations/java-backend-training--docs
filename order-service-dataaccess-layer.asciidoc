@@ -305,6 +305,8 @@ In source folder src/test/java of component order-service-core create same packa
 Create there class _ItemRepositoryTest_
 [source,java]
 ----
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+
 @SpringBootTest( webEnvironment = WebEnvironment.DEFINED_PORT)
 public class ItemRepositoryTest extends ComponentTest {
 ----
@@ -316,6 +318,12 @@ We need to adjust application.properties of src/test/resources/config.
 - Adjust spring.datasource.url to be same as for our application
 - Define server.port as different than for application.
 - Look at spring.flyway.locations. It calls migration of data for each of test runs. We leave it for now to start with the filled database.
+
+[source]
+----
+server.port=8085
+spring.h2.console.enabled=true
+----
 
 Functionality of ComponentTest will be described later.
 
