@@ -242,6 +242,23 @@ public CustomerEntity getOwner() {
   return owner;
 }
 ----
+- Check method getOwnerId, it is marked with @Transient annotation to not map owner twice (since we have relation specified also by getOwner() method):
++
+[source,java]
+----
+@Transient
+	public Long getOwnerId() {
+		if (this.getOwner() != null)
+			return this.getOwner().getId();
+		return null;
+	}
+
+	public void setOwnerId(Long ownerId) {
+		CustomerEntity e = new CustomerEntity();
+		e.setId(ownerId);
+		this.setOwner(e);
+	}
+----
 - Add mapping for relation to _ItemEntity_:
 +
 [source,java]
@@ -252,8 +269,6 @@ public Set<ItemEntity> getOrderPositions() {
   return orderPositions;
 }
 ----
-- Check method getOwnerId, it is marked with @Transient annotation to not map owner twice (since we have relation specified also by getOwner() method)
-
 Adjust _CustomerEntity_ and add there relation to _OrderEntity_ with annotation showing that this relation is mapped only in OrderSummary table.
 [source,java]
 ----
