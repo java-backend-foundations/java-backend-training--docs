@@ -364,6 +364,8 @@ Implement getters and setters for all attributes.
 Go back to the _ItemRepository_. Implement there findByCriteria method using JPAQuery.
 [source,java]
 ----
+import static com.querydsl.core.alias.Alias.$ 
+
 default Page<ItemEntity> findByCriteria(ItemSearchCriteriaTo criteria) {
 
   ItemEntity alias = newDslAlias();
