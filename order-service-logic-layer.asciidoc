@@ -1,4 +1,4 @@
-﻿:toc: macro
+﻿:toc: left
 toc::[]
 
 = Order Service - Business Logic Layer
