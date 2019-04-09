@@ -36,18 +36,20 @@ https://github.com/devonfw/devon4j/wiki/guide-access-control
 
 . Basic configuration
 
-* Prepare permissions for your business logic using Access Control Config method.
+* Prepare permissions for your business logic using Access Control Schema method.
 ** Please use inheritance of permissions.
 * In the class OrderserviceImpl use the @RolesAllowed annotation and the new permissions to grant access to the desired group of users
 * Run application and check if everything works. If there is a forbidden message for appropriate operations while for allowed you can execute theme.
 
-Hints: In more developed applications there will be some module like UserManagement which allow to receive roles for appropriate user. Since we have not such module we need to use simple solution. When you see method getRoles in class BaseUserDetailsService then you will notice that currently all user have only one role with same name as user name.
-You have two options. Prepare roles appropriate to this implementation or modify getRoles implementation to use roles assigned in BaseWebSecurityConfig. Please note that Spring Security adds automaticly prefix ROLE to all it roles.
+Hints: In more more dateiled applications there will be some module like UserManagement which allow to receive roles for appropriate user. In real enterprise application there will be probably some external IAM system. Since we have not such module we need to use simplified solution. When you see method getRoles in class BaseUserDetailsService then you will notice that currently all user have only one role with same name as user name.
+You have two options. Prepare roles appropriate to this implementation or modify getRoles implementation to use roles assigned in BaseWebSecurityConfig. Please note that Spring Security adds automaticly prefix ROLE to all it roles in case of usage inMemoryAuthentication. To avoid it use method authorities instead of roles.
 
-. Try to achieve the same results using old method (access-control-schema)
+. Try to achieve the same results using new method (ApplicationAccessControlConfig). To enable it just comment AccessControlProvider bean in class WebSecurityBeansConfig.
 . Instead of in memory authentication try to use database
 * Create appropriate migration script which add accounts and roles
 * Change method configureGlobal in class BaseUserDetailsService to use database.
-. Add mechanism which will force to wait a minute after unsuccesfull login to some account
-* Solution can be done in memory.
-* Protection can be done per account - not ip.
+
+Extra:
+
+. Try to add mechanism which will force to wait a minute after unsuccesfull login to some account
+* Solution can be done in memory. Simplify it as much as possible.
