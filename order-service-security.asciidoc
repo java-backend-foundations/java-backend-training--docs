@@ -36,20 +36,16 @@ https://github.com/devonfw/devon4j/wiki/guide-access-control
 
 . Basic configuration
 
-* Prepare permissions for your business logic using Access Control Schema method.
+* Prepare permissions for your business logic using Access Control Schema method. To do that please modify file access-control-schema.xml appropriate. Examples you can find in link above. Use names appropriate to implemented use cases.
 ** Please use inheritance of permissions.
+* After that use CobiGen to generate from file access-control-schema.xml PermissionConstants.java which can be used to protect our UseCases.
 * In the class OrderserviceImpl use the @RolesAllowed annotation and the new permissions to grant access to the desired group of users
+* Users currently are defined in class BaseWebSecurityConfig->configureGlobal. Please note that when method roles is used then prefix ROLE_ is added automaticly (then all users will have roles like ROLE_Cook). To avoid it you can use method authorities instead to avoid it.
+* Even role are configured they are still not used. Please look to file BaseUserDetailsService->getRoles. This implementation assign for every User one role - username. Please note that for Access Control Schema roles are camel case. You can test it by setting in example role cook instead od Cook in file access-control-schema.xml and test it. Please change implementation of method getRoles to return appropriate list of roles.
 * Run application and check if everything works. If there is a forbidden message for appropriate operations while for allowed you can execute theme.
 
-Hints: In more more dateiled applications there will be some module like UserManagement which allow to receive roles for appropriate user. In real enterprise application there will be probably some external IAM system. Since we have not such module we need to use simplified solution. When you see method getRoles in class BaseUserDetailsService then you will notice that currently all user have only one role with same name as user name.
-You have two options. Prepare roles appropriate to this implementation or modify getRoles implementation to use roles assigned in BaseWebSecurityConfig. Please note that Spring Security adds automaticly prefix ROLE to all it roles in case of usage inMemoryAuthentication. To avoid it use method authorities instead of roles.
+. Try to achieve the same results using new method (ApplicationAccessControlConfig). Adjust this file appropriate and enable it just comment AccessControlProvider bean in class WebSecurityBeansConfig. Please note that convention naming of roles and permission is diffrent. Prefix with apllication name is added. So or replace annotations RolesAllowed to use current values or remove prefix.
 
-. Try to achieve the same results using new method (ApplicationAccessControlConfig). To enable it just comment AccessControlProvider bean in class WebSecurityBeansConfig.
 . Instead of in memory authentication try to use database
 * Create appropriate migration script which add accounts and roles
 * Change method configureGlobal in class BaseUserDetailsService to use database.
-
-Extra:
-
-. Try to add mechanism which will force to wait a minute after unsuccesfull login to some account
-* Solution can be done in memory. Simplify it as much as possible.
