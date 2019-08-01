@@ -75,18 +75,22 @@ We set also constraints:
 
 ==== _Customer_ table
 Basing on _Item_ table provide also _Customer_ table with attributes as follows:
+
 - id: the id for each customer, automatically incremented using sequence HIBERNATE_SEQUENCE.
+
 - modificationCounter: used internally by JPA to take care of the optimistic locking for us.
 - firstname: the customer's name.
 - lastname: the customer's description.
 
 We set also constraints:
+
 - primary key for id to take care of it's uniqueness.
 
-Types and specific column names are shown in the diagram.
+Please create this table definition basing on types and specific column names that are shown in the diagram.
 
 ==== _OrderSummary_ table
 Basing on _Item_ table provide also _OrderSummary_ table with attributes as follows:
+
 - id: the id for each order, automatically incremented using sequence HIBERNATE_SEQUENCE.
 - modificationCounter: used internally by JPA to take care of the optimistic locking for us.
 - price: price of whole order.
@@ -95,21 +99,44 @@ Basing on _Item_ table provide also _OrderSummary_ table with attributes as foll
 - status: status of the order.
 
 We set also constraints:
+
 - primary key for id to take care of it's uniqueness.
 - foreign key to the _Customer_ table for column _ownerId_
 
-Types and specific column names are shown in the diagram.
+[source,sql]
+----
+CREATE TABLE OrderSummary (
+  id                  BIGINT NOT NULL AUTO_INCREMENT,
+  modificationCounter INTEGER NOT NULL,
+  price DOUBLE,
+  ownerId BIGINT NOT NULL,
+  creationDate DATE NOT NULL,
+  status VARCHAR(255) NOT NULL,
+  PRIMARY KEY (ID),
+  CONSTRAINT FK_OrderOwner_owner FOREIGN KEY(ownerId) REFERENCES Customer(id)
+);
+----
 
 ==== _OrderPosition_ table
 _OrderPosition_ is a relational table used for keeping relation between the order and it's positions. It does not map into entity class.
+
 - orderId: id of the _OrderSummary_ entry.
 - itemId: if of the _Item_ entry.
 
 We set also constraints:
+
 - foreign key for orderId to show the connection to _OrderSummary_ table.
 - foreign key for itemId to show the connection to _Item_ table.
 
-Types and specific column names are shown in the diagram.
+[source,sql]
+----
+CREATE TABLE OrderPosition (
+  orderId   BIGINT NOT NULL,
+  itemId	BIGINT NOT NULL,
+  CONSTRAINT FK_OrderPosition_order FOREIGN KEY(orderId) REFERENCES OrderSummary(id),
+  CONSTRAINT FK_OrderPosition_item FOREIGN KEY(itemId) REFERENCES Item(id)
+);
+----
 
 ==== Mock data
 Finally we can provide a certain amount of mock data to start our app. Add a new sql script /order-service-core/src/main/resources/db/migration/1.0/V0006__Add_OrderServiceData.sql adding sample data:
@@ -392,7 +419,7 @@ Implement getters and setters for all attributes.
 Go back to the _ItemRepository_. Implement there findByCriteria method using JPAQuery.
 [source,java]
 ----
-import static com.querydsl.core.alias.Alias.$ 
+import static com.querydsl.core.alias.Alias.$
 
 default Page<ItemEntity> findByCriteria(ItemSearchCriteriaTo criteria) {
 
