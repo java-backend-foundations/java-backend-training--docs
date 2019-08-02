@@ -35,7 +35,7 @@ After the process is done you should see a new _eclipse-school.bat_ launcher. Ex
 
 [NOTE]
 ====
-Actually there is a bug in the process of generating the workspace. The Maven configuration contains wrong path to `settings.xml` file. After the Eclipse is started please open the _Preferences_ dialog, go to _Maven > User Settings_, set the correct path to the `settings.xml` placed in your copy of _Devon IDE_ (`conf\.m2\settings.xml`) and push the button _Update Settings_
+Actually there is a bug in the process of generating the workspace. The Maven configuration contains wrong path to `settings.xml` file. After the Eclipse is started please open the _Preferences_ dialog in tab _Window_, go to _Maven > User Settings_, set the correct path to the `settings.xml` placed in your copy of _Devon IDE_ (`conf\.m2\settings.xml`) and push the button _Update Settings_
 
 image::images/devon4j/3.BuildYourOwn/maven-settings.png[width="750", link="images/devon4j/3.BuildYourOwn/maven-settings.png"]
 
