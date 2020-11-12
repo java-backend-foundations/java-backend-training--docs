@@ -3,4 +3,144 @@ toc::[]
 
 = Preparation
 
-TODO: preparation instructions (free of Capgemini specifics)
+== Prerequisites
+
+We try to make it as simple as possible for you. However, there are some minimal prerequisites:
+
+* You need to have a tool to extract `*.tar.gz` files (`tar` and `gzip`). On Windows lower Windows 10 (1803) use https://www.7-zip.org/[7-zip]. On all other platforms this comes out of the box.
+* You need to have https://git-scm.com[git] and https://curl.haxx.se/[curl] installed. 
+** On Windows all you need is download and install https://git-scm.com/download/win[git for windows]. This also ships with `bash` and `curl`. Please select the option to install Git Bash.
+* You need to have https://www.postman.com/[Postman] installed.
+
+
+== Devon IDE
+
+In this training we will use Devon IDE as integrated development environment. The original instruction how to setup it you can find https://github.com/devonfw/ide/blob/master/documentation/setup.asciidoc[here]. Please perform following steps
+
+=== Download
+
+All releases of `devonfw-ide` can be downloaded from https://repo.maven.apache.org/maven2/com/devonfw/tools/ide/devonfw-ide-scripts/[maven central]. Please download the file https://repo.maven.apache.org/maven2/com/devonfw/tools/ide/devonfw-ide-scripts/2020.08.002/devonfw-ide-scripts-2020.08.002.tar.gz[devonfw-ide-scripts-2020.08.002.tar.gz]
+
+=== Install
+
+Create a central folder like `C:\projects`. Inside this folder create a sub-folder for your new project such as `jbf-training` and extract the contents of the downloaded archive (`devonfw-ide-scripts-*.tar.gz`) into this new folder. Run the command `setup` in this folder (on windows just double click `setup.bat`). When asked, please select the default options.
+
+`devonfw-ide` automatically integrates with Windows-Explorer during setup. If you need more options please refer to the https://github.com/devonfw/ide/blob/master/documentation/integration.asciidoc[integration] documentation.
+
+= Devon CLI
+
+The `devonfw-ide` is shipped with a central command `devon`. The setup will automatically register this command so it is available in any shell on your system. This page describes the Command Line Interface (CLI) of this command.
+
+== Devon
+Without any arguments the `devon` command will determine your `DEVON_IDE_HOME` and setup your link:variables.asciidoc[environment variables] automatically. In case you are not inside of a `devonfw-ide` folder the command will echo a message and do nothing.
+
+Please find more information https://github.com/devonfw/ide/blob/master/documentation/cli.asciidoc[here].
+
+Please open a shell (CMD, ConEMU, PowerShell,...) in the directory where you have installed  `devonfw-ide` (e.g. `C:\projects\jbf-training`) and type 
+
+[source,bash]
+--------
+$ devon
+devonfw-ide environment variables have been set for C:\projects\jbf-training in workspace main
+
+$ echo %DEVON_IDE_HOME%
+C:\projects\jbf-training
+
+$ echo %JAVA_HOME%
+C:\projects\jbf-training/software/java
+
+$ mvn -v
+Apache Maven 3.6.2 (40f52333136460af0dc0d7232c0dc0bcf0d9e117; 2019-08-27T17:06:16+02:00)
+Maven home: C:\projects\jbf-training\software\maven\bin\..
+Java version: 11.0.5, vendor: AdoptOpenJDK, runtime: C:\projects\jbf-training\software\java
+Default locale: en_US, platform encoding: Cp1252
+OS name: "windows 10", version: "10.0", arch: "amd64", family: "windows"
+--------
+
+
+== Test the environment
+
+To test the environment please generate a sample application, build it and run a sample application.
+
+=== Generate a sample application
+
+* Please go to the `workspaces\main` directory in you `devon-ide` and generate a sample application (more info how to generate a Java application https://github.com/devonfw/ide/blob/master/documentation/java.asciidoc[here])
+
+[source,bash]
+--------
+$ cd workspaces\main\
+
+$ devon java create com.example.domain.testapp
+--------
+
+Next build the application
+
+[source,bash]
+--------
+$ cd testapp
+
+$ mvn clean install
+--------
+
+You can try also 
+
+[source,bash]
+--------
+$ devon mvn
+--------
+
+or
+
+[source,bash]
+--------
+$ devon build
+--------
+
+=== Run the sample application in IDE
+
+`devon-ide` provides 3 IDE solutions
+
+* https://github.com/devonfw/ide/blob/master/documentation/eclipse.asciidoc[Eclipse]
+* https://github.com/devonfw/ide/blob/master/documentation/vscode.asciidoc[Visual Studio Code]
+* https://github.com/devonfw/ide/blob/master/documentation/intellij.asciidoc[Intelij]
+
+You will use in this training the https://github.com/devonfw/cobigen[Cobigen] code generator which is integrated only with Eclipse. So please start ecliose using
+
+[source,bash]
+--------
+$ devon eclipse
+--------
+
+
+
+Now import our new project with `File > Import`. Select `Maven/Existing Maven Projects`
+
+image::images/devon4j/3.BuildYourOwn/new-app-5.png[width="500", link="images/devon4j/3.BuildYourOwn/new-app-5.png"]
+
+Browse for the `testapp` directory. Next select the `api` and `core` projects.
+
+image::images/devon4j/3.BuildYourOwn/new-app-6-test.png[width="500", link="images/devon4j/3.BuildYourOwn/new-app-6-test.png"]
+
+Click `Finish` and wait while the dependencies of the project are resolved to complete the import process.
+
+Finally, using _Spring Boot_ features (that provides us with an embedded Tomcat), we can run the app in an easy way. Look for the `SpringBootApp.java` class and click right button and use `Run As > Java Application` 
+
+If everything is ok you will see a messages in the _Console_ window like
+
+----
+2020-11-12 10:23:07.755  INFO 40312 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8081 (http) with context path ''
+2020-11-12 10:23:07.760  INFO 40312 --- [           main] c.example.domain.testapp.SpringBootApp   : Started SpringBootApp in 8.173 seconds (JVM running for 9.938)
+----
+
+The app will be available at http://localhost:8081/
+
+image::images/devon4j/3.BuildYourOwn/login-test.png[width="500", link="images/devon4j/3.BuildYourOwn/login-test.png"]
+
+[NOTE]
+====
+You are redirected to the login screen because, by default, the new _devon4j_ applications provide a basic security set up.
+====
+
+Please use the `admin/admin` credentials to login. You should see following content
+
+image::images/devon4j/3.BuildYourOwn/welcome-test.png[width="500", link="images/devon4j/3.BuildYourOwn/welcome-test.png"]
