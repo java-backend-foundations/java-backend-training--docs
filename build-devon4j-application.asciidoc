@@ -7,58 +7,35 @@ In this chapter we are going to show how to create a new _devon4j_ application f
 
 == Getting devonfw distribution
 
-The recommended way to start developing _devon4j_ applications is to get the last _devonfw_ distribution to have a _ready-to-start_ development environment.
+The recommended way to start developing _devon4j_ applications is to get the last `devon-ide` to have a _ready-to-start_ development environment.
 
-You should get from your trainer the location where you can find the distribution.
+You should get from your trainer instruction how to link:preparation[prepare] the environment.
 
-To see what is included in a _devonfw_ please visit the link:devonfw-intro[devonfw intro section.]
-
-Once the download is done extract the _zip_ file and you will get the distribution's content.
+Once the configuration is completed you will get the distribution's content.
 
 image::images/devon/devon_dist.png[width="450", link="images/devon/devon_dist.png"]
 
 == Prepare the workspace and initialize the distribution
 
-First, in the _workspaces_ directory of the distribution create a new folder _school_ and go into it. To configure the workspace and generate eclipse launcher please launch the script
-----
-update-all-workspaces.bat
-----
+Open a command shell of your choise (CMD, ConEMU, PowerShell, Windows Terminal, in the `workspaces\main` directory in your `devon-ide` installation and type)
 
-Now you should see the _conf_ directory and the Eclipse launchers.
+[source,bash]
+--------
+$ devon
+devonfw-ide environment variables have been set for C:\projects\jbf-training in workspace main
+--------
 
-[NOTE]
-====
-Learn more about _devonfw_ initialization https://github.com/devonfw/devon/wiki/getting-started-download-and-setup#setup-the-workspace[here]
-====
-
-After the process is done you should see a new _eclipse-school.bat_ launcher. Execute it and a new _Eclipse_ instance should be opened.
-
-[NOTE]
-====
-Actually there is a bug in the process of generating the workspace. The Maven configuration contains wrong path to `settings.xml` file. After the Eclipse is started please open the _Preferences_ dialog in tab _Window_, go to _Maven > User Settings_, set the correct path to the `settings.xml` placed in your copy of _Devon IDE_ (`conf\.m2\settings.xml`) and push the button _Update Settings_
-
-image::images/devon4j/3.BuildYourOwn/maven-settings.png[width="750", link="images/devon4j/3.BuildYourOwn/maven-settings.png"]
-
-Check whether the _Local Directory_ parameter points to a repository placed in your _Devon IDE_ distribution (`conf\.m2\repository`)
-====
-
-Execute _console.bat_ to get a console initialized with the provided software served in the `software` folder.
-
-[NOTE]
-====
-Even though this tutorial is following an structure similar to https://github.com/devonfw/my-thai-star[MyThaiStar]. If you are using the devonfw distribution, we recommend the use of the workspaces as a folder to create the project. We recomend to adapt the parameters appropriately. Once you finished generating the project, execute the script `update-all-workspaces.bat` and it will include a script in the root of the devonfw dist with your new workspace for eclipse.
-====
 
 == Clone the training repository
 
-Please fork the repository https://github.com/server-platforms-training/devonfw-java-backend-training into your Github account and clone it into `workspaces\school`. Therefore, run the following command in the console to change to the
-directory to `workspaces\school`
+Please fork the repository https://github.com/java-backend-foundations/devonfw-java-backend-training into your Github account and clone it into `workspaces\main`. Therefore, run the following command in the console to change to the directory to `workspaces\school`
 
-----
-cd workspaces\school
-git clone https://github.com/<github id>/devonfw-java-backend-training.git
-cd devonfw-java-backend-training
-----
+[source,bash]
+--------
+$ cd workspaces\main
+$ git clone https://github.com/<github id>/devonfw-java-backend-training.git
+$ cd devonfw-java-backend-training
+--------
 
 == Create the server project using the archetype
 
@@ -70,56 +47,48 @@ using command line. Another way is within eclipse, which is a more visual manner
 
 === Using the Command Line
 
-==== Step 1: Open the console
+To create a new application, you need to execute following commands:
 
-Open the devonfw console by executing the batch file console.bat from the devonfw distribution. It
-is a pre-configured console which automatically uses the software and configuration provided by
-the devonfw distribution.
+[source,bash]
+--------
+$ mvn archetype:generate -DarchetypeVersion=3.0.1 -DarchetypeGroupId=com.devonfw.java.templates -DarchetypeArtifactId=devon4j-template-server -DgroupId=com.devonfw.app.java -DartifactId=order-service -Dversion=0.0.1-SNAPSHOT -Dpackage=com.devonfw.app.java.order -DdbType=h2
+--------
 
-==== Step 2: Change the directory
+This will create a new directory inside `workspaces\main\devonfw-java-backend-training` with the name of your application with the created application inside.
 
-You can create the project anywhere you want, but it is a good practice to create the projects in
-your `workspace` directory. Therefore, run the following command in the console to change to the
-directory to `workspaces\school\devonfw-java-backend-training`.
+Compile the source using the `mvn` command
 
-----
-cd workspaces\school\devonfw-java-backend-training
-----
-
-==== Step 3: Create the new application
-
-To create a new application, you need to execute one of the following commands:
-
-----
-mvn archetype:generate -DarchetypeVersion=3.0.1 -DarchetypeGroupId=com.devonfw.java.templates -DarchetypeArtifactId=devon4j-template-server -DgroupId=com.devonfw.app.java -DartifactId=order-service -Dversion=0.0.1-SNAPSHOT -Dpackage=com.devonfw.app.java.order -DdbType=h2
-----
-
-This will create a new directory inside `workspaces\school\devonfw-java-backend-training` with the name of your application with the
-created application inside.
+[source,bash]
+--------
+$ cd order-service
+$ mvn clean install
+--------
 
 === Using the Eclipse
 
-[NOTE]
-====
-If you use a proxy to connect to the Internet, then the above steps will not work as Eclipse has a known bug where the archetype discovery does not work behind a proxy. In this case, please use the command line version documented above.
-====
+To create a new application using Eclipse, you should have `devon-ide` installed. Please open command shell in `workspaces\main` and start Eclipse using
 
-To create a new application using Eclipse, you should have installed devonfw distribution. Then,
-follow below steps to create a new application:
+[source,bash]
+--------
+$ devon
+devonfw-ide environment variables have been set for C:\projects\jbf-training in workspace main
+
+devon eclipse
+--------
+
+Then, follow below steps to create a new application:
 
 ==== Step 1: Create new Maven project
 
-Open Eclipse from a devonfw distribution, by executing the batch file eclipse-main.bat, then go to
-_File > New > Maven Project_. If you don’t see the option, click _File > New > Other_ and use the filter to search the option Maven Project
+Go to *`File > New > Maven Project`*. If you don’t see the option, click *`File > New > Other`* and use the filter to search the option Maven Project
 
-Set `workspaces\school\devonfw-java-backend-training\order-service` as the location
+Set `workspaces\main\devonfw-java-backend-training\order-service` as the location
 
 image::images/devon4j/3.BuildYourOwn/new-app-1.png[width="750", link="images/devon4j/3.BuildYourOwn/new-app-1.png"]
 
 ==== Step 2: Choose the archetype
 
-In the New Maven Project wizard, you need to choose the _devon4j-template-server_ archetype, as shown
-in below image.
+In the *`New Maven Project`* wizard, you need to choose the `devon4j-template-server` archetype, as shown in below image. Please uncheck the option *`Show the last version of Aechetype only`* and chose the version *`3.0.1`* of the archetype.
 
 image::images/devon4j/3.BuildYourOwn/new-app-2.png[width="750", link="images/devon4j/3.BuildYourOwn/new-app-2.png"]
 
@@ -153,17 +122,26 @@ Click on the _Finish_ button and the project will be ready for execution.
 You can skip this step if you have created the project using the Eclipse. The project was automatically imported into Eclipse
 ====
 
-As last step we can import the project we just created into the Eclipse IDE provided with _devonfw_. Although our new _devon4j_ based app is still empty we are going to show how to run it with _Spring Boot_ simply to check that everything is ok.
+As last step we can import the project we just created into the Eclipse IDE. Although our new _devon4j_ based app is still empty we are going to show how to run it with _Spring Boot_ simply to check that everything is ok.
 
-Execute _eclipse-school.bat_ launcher (if not done yet) and a new _Eclipse_ instance should be opened.
+Please open command shell in `workspaces\main` and start Eclipse (if not done yet) using 
 
-Now import our new project with `File > Import`.
+[source,bash]
+--------
+$ devon
+devonfw-ide environment variables have been set for C:\projects\jbf-training in workspace main
 
-Select _Maven/Existing Maven Projects_
+devon eclipse
+--------
+
+
+Now import our new project with *`File > Import`*.
+
+Select *`Maven/Existing Maven Projects`*
 
 image::images/devon4j/3.BuildYourOwn/new-app-5.png[width="500", link="images/devon4j/3.BuildYourOwn/new-app-5.png"]
 
-Browse for the `order-service` directory. Next select the _api_ and _core_ projects.
+Browse for the `order-service` directory. Next select the `api` and `core` projects (you will not need the other projects)
 
 image::images/devon4j/3.BuildYourOwn/new-app-6.png[width="500", link="images/devon4j/3.BuildYourOwn/new-app-6.png"]
 
@@ -209,7 +187,7 @@ image::images/devon4j/3.BuildYourOwn/emptyapp_test.png[ width="650", link="image
 
 == Configure the project
 
-Now let's change the _server context path_ of our application. Open `/jtqj-core/src/main/resources/config/application.properties` and set the `server.context-path` property to _/order-service_
+Now let's change the _server context path_ of our application. Open `core/src/main/resources/config/application.properties` and set the `server.context-path` property to _/order-service_
 
 [source,properties]
 ----
@@ -237,7 +215,7 @@ spring.datasource.url=jdbc:h2:mem:order-service
 
 
 
-Please add the _DevTools_ dependency into the `pom.xml` file of the _core_ project
+Please add the *`DevTools`* dependency into the `pom.xml` file of the _core_ project
 
 [source,xml]
 ----
@@ -248,7 +226,7 @@ Please add the _DevTools_ dependency into the `pom.xml` file of the _core_ proje
 </dependency>
 ----
 
-_DevTools_ provides Spring developers with some handy development-time tools. Among those are
+*`DevTools`* provides Spring developers with some handy development-time tools. Among those are
 
 - Automatic application restart when code changes
 - Automatic browser refresh when browser-destined resources (such as templates, JavaScript, stylesheets, and so on) change
@@ -268,15 +246,15 @@ To be able to correctly display the H2 Console you need to perform small change 
 
 == Run the app
 
-Finally, using _Spring Boot_ features (that provides us with an embedded Tomcat), we can run the app in an easy way. Look for the `SpringBootApp.java` class and click right button and select `Run As > Java Application` or `Run As > Spring Boot Application`. To be able to used the _DevTools_ you should use the second option
+Finally, using _Spring Boot_ features (that provides us with an embedded Tomcat), we can run the app in an easy way. Look for the `SpringBootApp.java` class and click right button and select `Run As > Java Application`.
 
 image::images/devon4j/3.BuildYourOwn/run.png[, link="images/devon4j/3.BuildYourOwn/run.png"]
 
 If everything is ok you will see a messages in the _Console_ window like
 
 ----
-INFO 25656 --- [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8081 (http) with context path '/order-service'
-INFO 25656 --- [  restartedMain] c.devonfw.app.java.order.SpringBootApp   : Started SpringBootApp in 9.808 seconds (JVM running for 12.025)
+2020-11-13 11:45:57.648  INFO 27448 --- [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8081 (http) with context path '/order-service'
+2020-11-13 11:45:57.651  INFO 27448 --- [  restartedMain] c.devonfw.app.java.order.SpringBootApp   : Started SpringBootApp in 12.141 seconds (JVM running for 14.109)
 ----
 
 The app will be available at http://localhost:8081/order-service
@@ -330,11 +308,17 @@ image::images/devon4j/3.BuildYourOwn/h2-console.png[, link="images/devon4j/3.Bui
 
 == Cobigen Health Check
 
-We will generate some parts of the application using _Cobigen_. The first time we use _Cobigen_, it is recommended to check the health of the tool. To do so, right-click over an entity and select _Update Templates..._ and next _Health Check_
+We will generate some parts of the application using *`Cobigen`*. The first time we use *`Cobigen`*, it is recommended to check the health of the tool. To do so, right-click over an entity and select *`Update Templates...`* and next *`Health Check`*
 
 image::images/devon4j/4.Components/cobigen0.png[width="750", link="images/devon4j/4.Components/cobigen0.png"]
 
-The next dialogs will show us if there are outdated templates. In that case we can solve it clicking the _Update_ button.
+The next dialogs will show us if there are outdated templates. In that case we can solve it clicking the *`Update`* button.
+
+If you get following error, Eclipse needs the *`Cobigen`* templates to be imported. The simplest way is to click the *`Adapt Templates...`* button. *`Cobigen`* will download and import actually used templates.
+
+image::images/devon4j/4.Components/cobigen0.png[width="750", link="images/devon4j/4.Components/cobigen2.png"]
+
+Perform the health check again. You can also perform the advanced check.
 
 image::images/devon4j/4.Components/cobigen_health1.png[width="350",link="images/devon4j/4.Components/cobigen_health1.png"]
 
