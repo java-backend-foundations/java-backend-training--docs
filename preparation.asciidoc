@@ -43,6 +43,19 @@ Please open a shell (CMD, ConEMU, PowerShell,...) in the directory where you hav
 --------
 $ devon
 devonfw-ide environment variables have been set for C:\projects\jbf-training in workspace main
+
+$ echo %DEVON_IDE_HOME%
+C:\projects\jbf-training
+
+$ echo %JAVA_HOME%
+C:\projects\jbf-training/software/java
+
+$ mvn -v
+Apache Maven 3.6.2 (40f52333136460af0dc0d7232c0dc0bcf0d9e117; 2019-08-27T17:06:16+02:00)
+Maven home: C:\projects\jbf-training\software\maven\bin\..
+Java version: 11.0.5, vendor: AdoptOpenJDK, runtime: C:\projects\jbf-training\software\java\jre
+Default locale: en_US, platform encoding: Cp1252
+OS name: "windows 10", version: "10.0", arch: "amd64", family: "windows"
 --------
 
 The source code we are working on requires JDK 8. Please add following entry in `conf\devon.properties` file
@@ -58,16 +71,14 @@ and type
 --------
 $ devon java setup
 
-$ echo %DEVON_IDE_HOME%
-C:\projects\jbf-training
 
 $ echo %JAVA_HOME%
 C:\projects\jbf-training/software/java
 
 $ mvn -v
 Apache Maven 3.6.2 (40f52333136460af0dc0d7232c0dc0bcf0d9e117; 2019-08-27T17:06:16+02:00)
-Maven home: C:\projects\jbf\software\maven\bin\..
-Java version: 1.8.0_242, vendor: AdoptOpenJDK, runtime: C:\projects\jbf\software\java\jre
+Maven home: C:\projects\jbf-training\software\maven\bin\..
+Java version: 1.8.0_242, vendor: AdoptOpenJDK, runtime: C:\projects\jbf-training\software\java\jre
 Default locale: en_US, platform encoding: Cp1252
 OS name: "windows 10", version: "10.0", arch: "amd64", family: "windows"
 --------
