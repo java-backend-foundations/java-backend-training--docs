@@ -166,6 +166,6 @@ image::images/devon4j/3.BuildYourOwn/login-test.png[width="500", link="images/de
 You are redirected to the login screen because, by default, the new _devon4j_ applications provide a basic security set up.
 ====
 
-Please use the `admin/admin` credentials to login. You should see following content
+Please use the `waiter/waiter` credentials to login. You should see following content
 
 image::images/devon4j/3.BuildYourOwn/welcome-test.png[width="500", link="images/devon4j/3.BuildYourOwn/welcome-test.png"]
