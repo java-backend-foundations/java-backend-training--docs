@@ -27,6 +27,7 @@ Create a central folder like `C:\projects`. Inside this folder create a sub-fold
 
 `devonfw-ide` automatically integrates with Windows-Explorer during setup. If you need more options please refer to the https://github.com/devonfw/ide/blob/master/documentation/integration.asciidoc[integration] documentation.
 
+
 = Devon CLI
 
 The `devonfw-ide` is shipped with a central command `devon`. The setup will automatically register this command so it is available in any shell on your system. This page describes the Command Line Interface (CLI) of this command.
@@ -42,6 +43,20 @@ Please open a shell (CMD, ConEMU, PowerShell,...) in the directory where you hav
 --------
 $ devon
 devonfw-ide environment variables have been set for C:\projects\jbf-training in workspace main
+--------
+
+The source code we are working on requires JDK 8. Please add following entry in `conf\devon.properties` file
+
+[source,bash]
+--------
+export JAVA_VERSION=8u242b08
+--------
+
+and type
+
+[source,bash]
+--------
+$ devon java setup
 
 $ echo %DEVON_IDE_HOME%
 C:\projects\jbf-training
@@ -51,12 +66,11 @@ C:\projects\jbf-training/software/java
 
 $ mvn -v
 Apache Maven 3.6.2 (40f52333136460af0dc0d7232c0dc0bcf0d9e117; 2019-08-27T17:06:16+02:00)
-Maven home: C:\projects\jbf-training\software\maven\bin\..
-Java version: 11.0.5, vendor: AdoptOpenJDK, runtime: C:\projects\jbf-training\software\java
+Maven home: C:\projects\jbf\software\maven\bin\..
+Java version: 1.8.0_242, vendor: AdoptOpenJDK, runtime: C:\projects\jbf\software\java\jre
 Default locale: en_US, platform encoding: Cp1252
 OS name: "windows 10", version: "10.0", arch: "amd64", family: "windows"
 --------
-
 
 == Test the environment
 
@@ -70,7 +84,7 @@ To test the environment please generate a sample application, build it and run a
 --------
 $ cd workspaces\main\
 
-$ devon java create com.example.domain.testapp
+$ devon java create com.example.domain.testapp -DarchetypeVersion=3.0.1
 --------
 
 Next build the application
