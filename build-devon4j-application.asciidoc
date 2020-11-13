@@ -9,7 +9,7 @@ In this chapter we are going to show how to create a new _devon4j_ application f
 
 The recommended way to start developing _devon4j_ applications is to get the last `devon-ide` to have a _ready-to-start_ development environment.
 
-You should get from your trainer instruction how to link:preparation[prepare] the environment.
+You should get from your trainer instruction how to link:preparation.asciidoc[prepare] the environment.
 
 Once the configuration is completed you will get the distribution's content.
 
@@ -316,7 +316,7 @@ The next dialogs will show us if there are outdated templates. In that case we c
 
 If you get following error, Eclipse needs the *`Cobigen`* templates to be imported. The simplest way is to click the *`Adapt Templates...`* button. *`Cobigen`* will download and import actually used templates.
 
-image::images/devon4j/4.Components/cobigen0.png[width="750", link="images/devon4j/4.Components/cobigen2.png"]
+image::images/devon4j/4.Components/cobigen2.png[width="350", link="images/devon4j/4.Components/cobigen2.png"]
 
 Perform the health check again. You can also perform the advanced check.
 
