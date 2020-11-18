@@ -3,33 +3,33 @@ toc::[]
 
 = Order Service -Security
 
-In this chapter we are going to configure authorization for our services. We will learn how to create permission and roles, how to grant theme and how to apply permisions to business logic.
+In this chapter we are going to configure authorization and authentication for our services. We will learn how to create permission and roles, how to grant theme and how to apply permisions to business logic which need to be protected.
 
 == Basic configuration
 
-As mentioned at the beginning of this course basic configuration is already created. It was done at the very begining during creation of application from archetype. You can find it in a classes:
+As you have probably already find out basic security configuration is already done. It was done at the very begining during creation of application from archetype. Many interesting information can be found in following classes:
 [source,java]
 ----
 com.devonfw.app.java.order.general.service.impl.config.BaseWebSecurityConfig
 com.devonfw.app.java.order.general.common.impl.security.BaseUserDetailsService
 ----
 
-As you can see in a first file there are some users configured already.
+Please read this file carefully and try to understand what is configured there. What is going on. Please try to find out places how and from where users are retrieved based on username. Determine a place how roles are determined for user right now. Consider if it will be enough in future. Please also take a look at something like AccessControlProvider.
 
 == Authorization
 
-Configuration of authorization can be done in two ways - Access Control Config (new way) or Access Control Schema (old method).
+Configuration of authorization can be done in multiple way. Spring by default base on roles. User has assign to some roles. Common situation is that when we want to protect a logic we don't want to do it by role but a separate privilige. We want to use groups of permission, inheritance and so one. This framework already provide for us such functionality.
 
 === Access Control Config
-In first method simply extend AccessControlConfig to configure your access control objects as code and reference it from your use-cases. In our application you can find it under:
+This is new approach. In this method we need to extend AccessControlConfig class. Entire configuration is done in code. We need to define groups, permissions. We are able to inheritance from other group as well as define new ones. In generated project basic configuration can be found under:
 ----
 com.devonfw.app.java.order.general.common.api.security.ApplicationAccessControlConfig
 ----
 
 === Access Control Schema
-In this method file access-control-schema.xml is used to define the mapping from groups to permissions. You are defining all typer and later on using cobigen you are able co configure PermissionConstants files to use it in your implementation.
+This is second possible approach. Currently it is deprecated. Idea is the same as in previous method. The only difference is that all roles/groups and so on is configured in file file access-control-schema.xml. When configured to be able to easily use theme in code we are able to use cobigen to generate PermissionConstants class with defined permissions.
 
-More details can be found under:
+More details about this methods can be found under:
 https://github.com/devonfw/devon4j/wiki/guide-access-control
 
 == Exercises
