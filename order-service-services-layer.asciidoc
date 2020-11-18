@@ -47,7 +47,7 @@ Now we have to provide some CRUD logic for our service. For example if we’d li
 For a method defined in this way we are able to access following url using GET request:
 [source,java]
 ----
-http://localhost:8081/order-service/services/rest/orderservice/v1/order/items/corn
+http://localhost:8081/order-service/services/rest/orderservice/v1/items/dumplings
 ----
 
 
