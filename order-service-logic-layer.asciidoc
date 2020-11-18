@@ -15,7 +15,7 @@ This step will contain manual creation and implementation of business logic laye
 
 === Transport objects
 
-During the persistence exercises you have created (or generated) the _Entity infrastructure_. The entities implement some entity interfaces (`Item`, `Customer` and `Order`). Transport objects must implement the same interfaces. Please implement the transport objects (`ItemEto`, `CustomerEto` and `OrderEto`) by implementing the mentioned interfaces. The transport objects should extend the class `AbstractCto` and should be placed in the `api` project in following package
+During the persistence exercises you have created (or generated) the _Entity infrastructure_. The entities implement some entity interfaces (`Item`, `Customer` and `Order`). Transport objects must implement the same interfaces. Please implement the transport objects (`ItemEto`, `CustomerEto` and `OrderEto`) by implementing the mentioned interfaces. The transport objects should extend the class `AbstractEto` and should be placed in the `api` project in following package
 
 [source,java]
 ----
@@ -256,7 +256,6 @@ Please repeat the same for `OrderEntity`
 In the previosu steps you have implemented manually or generated the CRUD part of the business logic. Next you have to implement some additional business logic. Please create following logic in proper usecase interfaces:
 
 - increase price of the item with specified name.
-- remove customer by id.
 - create order with two positions and with a specified owner.
 - find orders from given day with specified status.
 - find items by name match (LIKE) ordered by name.
