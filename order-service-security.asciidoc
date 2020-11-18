@@ -49,7 +49,7 @@ https://github.com/devonfw/devon4j/wiki/guide-access-control
 * When you are done with defining roles use CobiGen on file *access-control-schema.xml* to generate appropiate constants in *PermissionConstants.java*. They can be used to protect our UseCases later.
 * Now you are ready to actually protect your business logic. Grant access to the desired group of users putting *@RolesAllowed* annotation with appropiate permission in class *OrderserviceImpl*.
 * Please implement method BaseUserDetailsService->getRoles to retrieve actual roles from user. Current implementation gives user always one authority - its name. You need to read user by username and read its Authorities (they are of type *GrantedAuthority* - to receive string you need to invoke GrantedAuthority->getAuthority). Please note that for Access Control Schema roles are camel case.
-* Run application and check if everything works. You should receive a forbidden message for operations for which user has no permission. It other case it should be executed correctly.
+* Run application and check if everything works. You should receive a forbidden message for operations for which user has no permission. In other case it should be executed correctly.
 +
 TIP: Please look how exactly users and its roles/authorities are configured and how this values are translated to actual permissions defined before. You can do it in class BaseWebSecurityConfig->configureGlobal (defining users) and BaseUserDetailsService->getRoles.
 +
