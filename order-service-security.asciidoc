@@ -1,6 +1,14 @@
 :toc: macro
 toc::[]
 
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
 = Order Service -Security
 
 In this chapter we are going to configure authorization and authentication for our services. We will learn how to create permission and roles, how to grant theme and how to apply permisions to business logic which need to be protected.
@@ -27,25 +35,35 @@ com.devonfw.app.java.order.general.common.api.security.ApplicationAccessControlC
 ----
 
 === Access Control Schema
-This is second possible approach. Currently it is deprecated. Idea is the same as in previous method. The only difference is that all roles/groups and so on is configured in file file access-control-schema.xml. When configured to be able to easily use theme in code we are able to use cobigen to generate PermissionConstants class with defined permissions.
+This is second possible approach. Currently it is deprecated. Idea is the same as in previous method. The only difference is that all roles/groups and so on is configured in file *access-control-schema.xml*. When configured to be able to easily use theme in code we are able to use cobigen to generate PermissionConstants class with defined permissions.
 
 More details about this methods can be found under:
 https://github.com/devonfw/devon4j/wiki/guide-access-control
 
 == Exercises
 
-. Basic configuration
+. Basic configuration of authorization.
 
-* Prepare permissions for your business logic using Access Control Schema method. To do that please modify file access-control-schema.xml appropriate. Examples you can find in link above. Use names appropriate to implemented use cases.
-** Please use inheritance of permissions.
-* After that use CobiGen to generate from file access-control-schema.xml PermissionConstants.java which can be used to protect our UseCases.
-* In the class OrderserviceImpl use the @RolesAllowed annotation and the new permissions to grant access to the desired group of users
-* Users currently are defined in class BaseWebSecurityConfig->configureGlobal. Please note that when method roles is used then prefix ROLE_ is added automaticly (then all users will have roles like ROLE_Cook). To avoid it you can use method authorities instead to avoid it.
-* Even role are configured they are still not used. Please look to file BaseUserDetailsService->getRoles. This implementation assign for every User one role - username. Please note that for Access Control Schema roles are camel case. You can test it by setting in example role cook instead od Cook in file access-control-schema.xml and test it. Please change implementation of method getRoles to return appropriate list of roles.
-* Run application and check if everything works. If there is a forbidden message for appropriate operations while for allowed you can execute theme.
+* Your first task is to create user groups and permissions to already implemented logic. Think about prepared use cases, roles present in system and decide which role should contain what permission. After that prepare you permission schema appropriate using Access Control Schema method. To do that please modify file access-control-schema.xml appropriately. Description and examples you can find in link above. Please remember about meaningfull and correct naming.
+** Please remember to use inheritance of permissions to avoid duplications.
+* When you are done with defining roles use CobiGen on file *access-control-schema.xml* to generate appropiate constants in *PermissionConstants.java*. They can be used to protect our UseCases later.
+* Now you are ready to actually protect your business logic. Grant access to the desired group of users putting *@RolesAllowed* annotation with appropiate permission in class *OrderserviceImpl*.
+* Please implement method BaseUserDetailsService->getRoles to retrieve actual roles from user. Current implementation gives user always one authority - its name. You need to read user by username and read its Authorities (they are of type *GrantedAuthority* - to receive string you need to invoke GrantedAuthority->getAuthority). Please note that for Access Control Schema roles are camel case.
+* Run application and check if everything works. You should receive a forbidden message for operations for which user has no permission. It other case it should be executed correctly.
++
+TIP: Please look how exactly users and its roles/authorities are configured and how this values are translated to actual permissions defined before. You can do it in class BaseWebSecurityConfig->configureGlobal (defining users) and BaseUserDetailsService->getRoles.
++
+WARNING: Please remember that when you are defining a role by *.withUser("waiter").password(this.passwordEncoder.encode("waiter")).roles("Waiter")* then this user contains authority with prefix ROLE_ (in this case ROLE_Waiter). Please take it into consideration when implementing BaseUserDetailsService->getRoles or use *.withUser("waiter").password(this.passwordEncoder.encode("waiter")).**authorities**("Waiter") to avoid adding prefix.
++
+. Try to achieve the same results using new method (ApplicationAccessControlConfig). Modify this file to has the same logical content as xml file. After that you need to enable this method. Please note at type of field *BaseUserDetailsService->accessControlProvider*. Change it to appropriate type to use *ApplicationAccessControlConfig*.
++
+TIP: Please note that convention of naming for roles and permission is different than in previous method. Prefix with apllication name is added. You need to adjust annotations RolesAllowed to use current values or remove prefix.
 
-. Try to achieve the same results using new method (ApplicationAccessControlConfig). Adjust this file appropriate and enable it just comment AccessControlProvider bean in class WebSecurityBeansConfig. Please note that convention naming of roles and permission is diffrent. Prefix with apllication name is added. So or replace annotations RolesAllowed to use current values or remove prefix.
+== Additional Exercises
 
-. Instead of in memory authentication try to use database
-* Create appropriate migration script which add accounts and roles
+. So far all data about users were hold in memory. Now try to use database to hold your users. Adjust appropriate component to receive data from database during authentication.
+* Create appropriate migration script which add users and roles.
 * Change method configureGlobal in class BaseUserDetailsService to use database.
+* Verify that after addition of new user to database you can log in using new creaditentials.
++
+. Try to combine both authorization methods (Access Control Schema and ApplicationAccessControlConfig). It means that users and group from both method will be read and can be used to protect business logic. To simplify you can assume that there is no duplicates.
