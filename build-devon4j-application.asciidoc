@@ -243,6 +243,23 @@ To be able to correctly display the H2 Console you need to perform small change 
 ----
 ====
 
+[NOTE]
+====
+The combination Devtools + Hibernate doesn't work correctly. Sometimes it ends with following error in the repositories
+
+[source,java]
+----
+Caused by: java.lang.ClassCastException: com.devonfw.app.java.order.orderservice.dataaccess.api.ItemEntity$$EnhancerByCGLIB$$33fc0b29 cannot be cast to com.devonfw.app.java.order.orderservice.dataaccess.api.ItemEntity
+    at com.devonfw.app.java.order.orderservice.dataaccess.api.repo.ItemRepository.findByNameLike(ItemRepository.java:94)
+----
+
+This problem can be fixed by adding a file `spring-devtools.properties` in `order-service-core/src/main/resources/META-INF` with following content
+
+[source,java]
+----
+restart.include.all=.*
+----
+====
 
 == Run the app
 
