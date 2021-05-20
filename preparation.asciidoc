@@ -37,7 +37,7 @@ Without any arguments the `devon` command will determine your `DEVON_IDE_HOME` a
 
 Please find more information https://github.com/devonfw/ide/blob/master/documentation/cli.asciidoc[here].
 
-Please open a shell (CMD, ConEMU, PowerShell,...) in the directory where you have installed  `devonfw-ide` (e.g. `C:\projects\jbf-training`) and type 
+Please open a shell (CMD, ConEMU, ...) in the directory where you have installed  `devonfw-ide` (e.g. `C:\projects\jbf-training`) and type 
 
 [source,bash]
 --------
