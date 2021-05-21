@@ -129,7 +129,17 @@ $ devon build
 * https://github.com/devonfw/ide/blob/master/documentation/vscode.asciidoc[Visual Studio Code]
 * https://github.com/devonfw/ide/blob/master/documentation/intellij.asciidoc[Intelij]
 
-You will use in this training the https://github.com/devonfw/cobigen[Cobigen] code generator which is integrated only with Eclipse. So please start ecliose using
+You will use in this training the https://github.com/devonfw/cobigen[Cobigen] code generator which is integrated only with Eclipse. 
+
+Devon tries to install the newest version of Eclispe which requires JDK 11. To force installation of the older version please add following entry in `conf\devon.properties` file
+
+
+[source,bash]
+--------
+export ECLIPSE_VERSION=2020-06
+--------
+
+Please start eclipse using
 
 [source,bash]
 --------
