@@ -317,6 +317,17 @@ image::images/devon4j/3.BuildYourOwn/simple-get-2.png[, link="images/devon4j/3.B
 
 During the training you will probably see the content of the database. Please open the H2 Console using following url http://localhost:8081/order-service/h2-console/ Please use the correct _JDBC URL_ you have configured previously.
 
+[NOTE]
+====
+*`DevTools`* should automatically enable the H2 Console, but if you can't see it please add follwoing parameter to the `core/src/main/resources/config/application.properties` file
+
+[source,java]
+----
+spring.h2.console.enabled=true
+----
+====
+
+
 image::images/devon4j/3.BuildYourOwn/h2-console-login.png[, link="images/devon4j/3.BuildYourOwn/h2-console-login.png"]
 
 After successful login you should see following content
