@@ -40,15 +40,13 @@ The one to many relation between order and customer.
 
 In the projects created with the devon4j archetype, we already have a complete data base schema that we can use as a model to create our own. By default we are going to work over the H2 database engine provided in the devon4j applications.
 
-We have the /order-service-core/src/main/resources/db/type/h2/V0001Create_Sequence.sql, V0002Create_RevInfo.sql and V0003Create_BinaryObject.sql these tables are already used by default so don’t delete them. We therefore also have /order-service-core/src/main/resources/db/migration/1.0/V0004Add_blob_data.sql. You can create your own schema table that your required. For e.g. db/type/h2/V0005__Create_OrderServiceSchema.sql.
-
 You can check that your schema is valid running SpringBootApp.java which recreates schema after each run. Created schema can be found in the H2 console.
 
 image::images/devon4j/6.Dataaccess/orderservice_db_schema.png[width="700", link="images/devon4j/6.Dataaccess/orderservice_db_schema.png"]
 
 ==== _Item_ table
 
-Now we can add our first table Item in db/type/h2/V0005__Create_OrderServiceSchema.sql. In the case of OrderService, the items will provide: id, modificationCounter, name, description and price. So we need to represent that data in our table:
+Now we can add our first table Item in /order-service-core/src/main/resources/db/migration/1.0/V0002__Create_OrderServiceSchema.sql. In the case of OrderService, the items will provide: id, modificationCounter, name, description and price. So we need to represent that data in our table:
 
 [source,sql]
 ----

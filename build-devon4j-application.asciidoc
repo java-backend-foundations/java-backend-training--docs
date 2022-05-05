@@ -51,7 +51,7 @@ To create a new application, you need to execute following commands:
 
 [source,bash]
 --------
-$ mvn archetype:generate -DarchetypeVersion=3.0.1 -DarchetypeGroupId=com.devonfw.java.templates -DarchetypeArtifactId=devon4j-template-server -DgroupId=com.devonfw.app.java -DartifactId=order-service -Dversion=0.0.1-SNAPSHOT -Dpackage=com.devonfw.app.java.order -DdbType=h2
+$ mvn archetype:generate -DarchetypeVersion=2021.04.003 -DarchetypeGroupId=com.devonfw.java.templates -DarchetypeArtifactId=devon4j-template-server -DgroupId=com.devonfw.app.java -DartifactId=order-service -Dversion=0.0.1-SNAPSHOT -Dpackage=com.devonfw.app.java.order -DdbType=h2
 --------
 
 This will create a new directory inside `workspaces\main\devonfw-java-backend-training` with the name of your application with the created application inside.
@@ -88,7 +88,7 @@ image::images/devon4j/3.BuildYourOwn/new-app-1.png[width="750", link="images/dev
 
 ==== Step 2: Choose the archetype
 
-In the *`New Maven Project`* wizard, you need to choose the `devon4j-template-server` archetype, as shown in below image. Please uncheck the option *`Show the last version of Aechetype only`* and chose the version *`3.0.1`* of the archetype.
+In the *`New Maven Project`* wizard, you need to choose the `devon4j-template-server` archetype, as shown in below image. Please uncheck the option *`Show the last version of Aechetype only`* and chose the version *`2021.04.003`* of the archetype.
 
 image::images/devon4j/3.BuildYourOwn/new-app-2.png[width="750", link="images/devon4j/3.BuildYourOwn/new-app-2.png"]
 
@@ -213,25 +213,12 @@ with
 spring.datasource.url=jdbc:h2:mem:order-service
 ----
 
+Add following entry to enable the H2 Console
 
-
-Please add the *`DevTools`* dependency into the `pom.xml` file of the _core_ project
-
-[source,xml]
+[source,java]
 ----
-<dependency>
-  <groupId>org.springframework.boot</groupId>
-  <artifactId>spring-boot-devtools</artifactId>
-  <optional>true</optional>
-</dependency>
+spring.h2.console.enabled=true
 ----
-
-*`DevTools`* provides Spring developers with some handy development-time tools. Among those are
-
-- Automatic application restart when code changes
-- Automatic browser refresh when browser-destined resources (such as templates, JavaScript, stylesheets, and so on) change
-- Automatic disable of template caches
-- Built in H2 Console if the H2 database is in use
 
 [NOTE]
 ====
@@ -239,27 +226,10 @@ To be able to correctly display the H2 Console you need to perform small change 
 
 [source,java]
 ----
-.headers().frameOptions().sameOrigin().and()
+http = http.headers().frameOptions().sameOrigin().and();
 ----
 ====
 
-[NOTE]
-====
-The combination Devtools + Hibernate doesn't work correctly. Sometimes it ends with following error in the repositories
-
-[source,java]
-----
-Caused by: java.lang.ClassCastException: com.devonfw.app.java.order.orderservice.dataaccess.api.ItemEntity$$EnhancerByCGLIB$$33fc0b29 cannot be cast to com.devonfw.app.java.order.orderservice.dataaccess.api.ItemEntity
-    at com.devonfw.app.java.order.orderservice.dataaccess.api.repo.ItemRepository.findByNameLike(ItemRepository.java:94)
-----
-
-This problem can be fixed by adding a file `spring-devtools.properties` in `order-service-core/src/main/resources/META-INF` with following content
-
-[source,java]
-----
-restart.include.all=.*
-----
-====
 
 == Run the app
 
@@ -270,63 +240,26 @@ image::images/devon4j/3.BuildYourOwn/run.png[, link="images/devon4j/3.BuildYourO
 If everything is ok you will see a messages in the _Console_ window like
 
 ----
-2020-11-13 11:45:57.648  INFO 27448 --- [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8081 (http) with context path '/order-service'
-2020-11-13 11:45:57.651  INFO 27448 --- [  restartedMain] c.devonfw.app.java.order.SpringBootApp   : Started SpringBootApp in 12.141 seconds (JVM running for 14.109)
+2022-05-04 22:03:27.769  INFO 28220 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8081 (http) with context path '/order-service'
+2022-05-04 22:03:27.800  INFO 28220 --- [           main] c.devonfw.app.java.order.SpringBootApp   : Started SpringBootApp in 8.578 seconds (JVM running for 9.354)
 ----
 
 The app will be available at http://localhost:8081/order-service
 
-image::images/devon4j/3.BuildYourOwn/login.png[, link="images/devon4j/3.BuildYourOwn/login.png"]
+image::images/devon4j/3.BuildYourOwn/login.png[width="500", link="images/devon4j/3.BuildYourOwn/login.png"]
 
 [NOTE]
 ====
 You are redirected to the login screen because, by default, the new _devon4j_ applications provide a basic security set up.
 ====
 
-Please use the `waiter/waiter` credentials to login. You should see following content
+Please use the `admin/admin` credentials to login. You should see following content
 
 image::images/devon4j/3.BuildYourOwn/welcome.png[, link="images/devon4j/3.BuildYourOwn/welcome.png"]
-
-== Simple `GET` call
-
-The generated project provides under http://localhost:8081/order-service/services/rest/security/v1/currentuser a simple REST service to receive the current logged-in user. Try to call the service using _Postman_
-
-image::images/devon4j/3.BuildYourOwn/simple-get-1.png[, link="images/devon4j/3.BuildYourOwn/simple-get-1.png"]
-
-Instead of receiving the current user data we get a response with the login form. This is because the _devon4j_ applications, by default, implements the _Spring Security_ so we would need to log in using the log in form to access to the services.
-
-To ease the example we are going to change the login method to _Http Basic Authentication_ and disable the _CSRF_ filter (otherwise you would need to send additional CSRF token with each writting operation)
-
-In the file `BaseWebSecurityConfig.java` edit the `configure(HttpSecurity http)` method and replace following line:
-
-[source,java]
-----
-.csrf().requireCsrfProtectionMatcher(new CsrfRequestMatcher()).and()
-----
-with
-[source,java]
-----
-.csrf().disable().httpBasic().and()
-----
-
-Now run again the app and try again the same call. You should obtain the data of the current user
-
-image::images/devon4j/3.BuildYourOwn/simple-get-2.png[, link="images/devon4j/3.BuildYourOwn/simple-get-2.png"]
 
 == Open the H2 Console
 
 During the training you will probably see the content of the database. Please open the H2 Console using following url http://localhost:8081/order-service/h2-console/ Please use the correct _JDBC URL_ you have configured previously.
-
-[NOTE]
-====
-*`DevTools`* should automatically enable the H2 Console, but if you can't see it please add follwoing parameter to the `core/src/main/resources/config/application.properties` file
-
-[source,java]
-----
-spring.h2.console.enabled=true
-----
-====
-
 
 image::images/devon4j/3.BuildYourOwn/h2-console-login.png[, link="images/devon4j/3.BuildYourOwn/h2-console-login.png"]
 
@@ -351,6 +284,28 @@ Perform the health check again. You can also perform the advanced check.
 image::images/devon4j/4.Components/cobigen_health1.png[width="350",link="images/devon4j/4.Components/cobigen_health1.png"]
 
 image::images/devon4j/4.Components/cobigen_health2.png[width="350",link="images/devon4j/4.Components/cobigen_health2.png"]
+
+== Simple `GET` call
+
+The generated project provides under http://localhost:8081/order-service/services/rest/security/v1/currentuser a simple REST service to receive the current logged-in user. Try to call the service using _Postman_
+
+image::images/devon4j/3.BuildYourOwn/simple-get-1.png[, link="images/devon4j/3.BuildYourOwn/simple-get-1.png"]
+
+Instead of receiving the current user data we get a response with the login form. This is because the _devon4j_ applications, by default, implements the _Spring Security_ so we would need to log in using the log in form to access to the services.
+
+To ease the example we are going to change the login method to _Http Basic Authentication_ 
+
+In the file `BaseWebSecurityConfig.java` edit the `configure(HttpSecurity http)` method and add following line:
+
+[source,java]
+----
+http = http.httpBasic().and();
+----
+
+Now run again the app and try again the same call. You should obtain the data of the current user
+
+image::images/devon4j/3.BuildYourOwn/simple-get-2.png[, link="images/devon4j/3.BuildYourOwn/simple-get-2.png"]
+
 
 
 === link:devon4j-components.asciidoc[Next chapter: Add a component to your app]
