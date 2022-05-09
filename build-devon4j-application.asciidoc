@@ -287,7 +287,86 @@ image::images/devon4j/4.Components/cobigen_health2.png[width="350",link="images/
 
 == Simple `GET` call
 
-The generated project provides under http://localhost:8081/order-service/services/rest/security/v1/currentuser a simple REST service to receive the current logged-in user. Try to call the service using _Postman_
+You will use _Postman_ to test  the REST services. Actually in the generated project there is no REST service. To be able to prepare for usage of _Postman_, create a simple service to receive a current logged-in user.
+
+Add package `com.devonfw.app.java.order.general.service.api.rest` under `order-service-api/src/main/java/` and add following interface there 
+
+[source,java]
+----
+package com.devonfw.app.java.order.general.service.api.rest;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+
+import com.devonfw.module.rest.common.api.RestService;
+
+/**
+ * The security REST service provides access to the csrf token, the authenticated user's meta-data. Furthermore, it
+ * provides functionality to check permissions and roles of the authenticated user.
+ */
+@Path("/security/v1")
+public interface SecurityRestService extends RestService {
+
+  /**
+   * @return the {@link UserProfileTo} of the currently logged-in user.
+   */
+  @GET
+  @Path("/currentuser/")
+  String getCurrentUser();
+
+}
+----
+
+Add package `com.devonfw.app.java.order.general.service.impl.rest` under `order-service-core/src/main/java/` and add following interface there 
+
+[source,java]
+----
+package com.devonfw.app.java.order.general.service.impl.rest;
+
+import javax.annotation.security.PermitAll;
+import javax.inject.Named;
+import javax.transaction.Transactional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import com.devonfw.app.java.order.general.service.api.rest.SecurityRestService;
+
+/**
+ * Implementation of {@link SecurityRestService}.
+ */
+@Named
+@Transactional
+public class SecurityRestServiceImpl implements SecurityRestService {
+
+  /** Logger instance. */
+  private static final Logger LOG = LoggerFactory.getLogger(SecurityRestServiceImpl.class);
+
+  @Override
+  @PermitAll
+  public String getCurrentUser() {
+
+    SecurityContext context = SecurityContextHolder.getContext();
+    Authentication authentication = null;
+    if (context != null) {
+      authentication = context.getAuthentication();
+    }
+    if (authentication == null) {
+      throw new IllegalStateException();
+    }
+    UserDetails user = (UserDetails) authentication.getPrincipal();
+    return user.getUsername();
+  }
+}
+----
+
+
+
+The service will be available under http://localhost:8081/order-service/services/rest/security/v1/currentuser. Try to call the service using _Postman_
 
 image::images/devon4j/3.BuildYourOwn/simple-get-1.png[, link="images/devon4j/3.BuildYourOwn/simple-get-1.png"]
 

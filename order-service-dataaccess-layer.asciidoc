@@ -137,7 +137,7 @@ CREATE TABLE OrderPosition (
 ----
 
 ==== Mock data
-Finally we can provide a certain amount of mock data to start our app. Add a new sql script /order-service-core/src/main/resources/db/migration/1.0/V0006__Add_OrderServiceData.sql adding sample data:
+Finally we can provide a certain amount of mock data to start our app. Add a new sql script /order-service-core/src/main/resources/db/migration/1.0/V0003__Add_OrderServiceData.sql adding sample data:
 
 [source,sql]
 ----
