@@ -11,14 +11,14 @@ The goal of this exercise is to define Rest services (API and implementation) to
 
 == Service Layer definition
 
-At first we have to define an interface for our Rest service facade. We start with definition of following the interface OrderserviceRestService located:
+At first we have to define an interface for our Rest service facade. We start with definition of following interface OrderserviceRestService located in `order-service-api`:
 
 [source,java]
 ----
 package com.devonfw.app.java.order.orderservice.service.api.rest
 ----
 
-We define implementation respectively: OrderserviceRestServiceImpl in:
+We define implementation respectively (in `order-service-core`): OrderserviceRestServiceImpl in:
 
 [source,java]
 ----
@@ -40,35 +40,63 @@ Now we have to provide some CRUD logic for our service. For example if we’d li
 [source,java]
 ----
 	@GET
-	@Path("/items/{name}")
-	public Set <ItemEto> findItemByName(@PathParam("name") String name);
+    @Path("/item/{id}/")
+    public ItemEto getItem(@PathParam("id") long id);
 ----
 
 For a method defined in this way we are able to access following url using GET request:
+
 [source,java]
 ----
-http://localhost:8081/order-service/services/rest/orderservice/v1/items/dumplings
+http://localhost:8081/order-service/services/rest/orderservice/v1/item/23
 ----
 
+Please use an http client e.g. postman https://www.getpostman.com/ to test the service (after implementing it)
 
-Please do so using an http client e.g. postman https://www.getpostman.com/
+image::images/devon4j/11.Services/postman-get-item.png[width="750", link="images/devon4j/11.Services/postman-get-item.png"]
+
 Please also define other functionality that has to be exposed in rest service, keeping in mind that if we’d like to exchange complex data, we don’t have to define input arguments as {pathVariable}. We can define it simply as method argument:
 
 [source,java]
 ----
-	@PUT
-	@Path("/order/save/")
-	public OrderCto saveOrder(OrderCto order);
+  @POST
+  @Path("/item/")
+  public ItemEto saveItem(ItemEto item);
 ----
+
+You can test it later using _Postman_
+
+image::images/devon4j/11.Services/postman-post-item.png[width="750", link="images/devon4j/11.Services/postman-post-item.png"]
+
+You can also implement functionality to search item by search criteria
+
+[source,java]
+----
+  @Path("/item/search")
+  @POST
+  public Page<ItemEto> findItems(ItemSearchCriteriaTo searchCriteriaTo);
+----
+
+For a method defined in this way we are able to access following url using POST request:
+
+[source,java]
+----
+http://localhost:8081/order-service/services/rest/orderservice/v1/item/search
+----
+
+image::images/devon4j/11.Services/postman-item-search-1.png[width="750", link="images/devon4j/11.Services/postman-item-search-1.png"]
+
+image::images/devon4j/11.Services/postman-item-search-2.png[width="750", link="images/devon4j/11.Services/postman-item-search-2.png"]
+
 
 Now we can implement our services. Restservice has to simply delegate business related actions to respective use cases. To do so, we only have to inject Orderservice component facade and delegate our logic to proper methods. For example:
 
 [source,java]
 ----
-@Override
-public OrderCto saveOrder(OrderCto order) {
-	return this.orderservice.saveOrder(order);
-}
+  @Override
+  public ItemEto saveItem(ItemEto item) {
+    return this.orderservice.saveItem(item);
+  }
 ----
 Also please keep in mind that our OrderserviceRestServiceImpl class has to be properly annotated:
 
@@ -77,6 +105,29 @@ Also please keep in mind that our OrderserviceRestServiceImpl class has to be pr
 @Named("OrderserviceRestService")
 public class OrderserviceRestServiceImpl implements OrderserviceRestService {
 ----
+
+Please generate the service layer for Customer using _Cobigen_. Try to implement more complicated services returning complete Orders as `OrderCTO`, like
+
+[source,java]
+----
+  @Path("/order/search")
+  @POST
+  public Page<OrderCto> findOrders(OrderSearchCriteriaTo searchCriteriaTo);
+----
+
+Generate the `OrderCTO` if necessary. 
+
+The service can be tested using POST request 
+
+[source,java]
+----
+http://localhost:8081/order-service/services/rest/orderservice/v1/order/search
+----
+
+Test the service using _Postman_
+
+image::images/devon4j/11.Services/postman-order-search.png[width="750", link="images/devon4j/11.Services/postman-order-search.png"]
+
 
 == Testing of service layer
 
@@ -87,111 +138,62 @@ To properly test the implementation of rest service we have to define some subsy
 com.devonfw.app.java.order.general.service.impl.rest
 ----
 
-We shall also define some additional test configuration that allows us e.g. to use rest template or create some additional beans such as test helpers e.t.c. This step is optional, but it allows us to structurize our application a bit.
+Plese extend the existing `RestServiceTest` class
 
 [source,java]
 ----
-@Configuration
-public class OrderServiceRestTestConfig {
+public class OrderserviceRestServiceImplTest extends RestServiceTest {
 
-  @Bean
-  public OrderServiceRestTestHelper orderServiceRestTestHelper() {
-    OrderServiceRestTestHelper orderServiceRestTestHelper = new OrderServiceRestTestHelper();
-    return orderServiceRestTestHelper;
-  }
-
-}
 ----
 
-Now we can complete annotations of our testclass:
+To be able to call the REST service we you need to define a client proxy. Please implement a method creating the proxy using the `ServiceClientFactory`
 
 [source,java]
 ----
-@RunWith(SpringRunner.class)
-@ContextConfiguration(classes = { SpringBootApp.class, OrderServiceRestTestConfig.class })
-public class OrderServiceRestTest extends AbstractRestServiceTest {
+private OrderserviceRestService getOrderService() {
+
+    String login = "admin";
+    String password = "admin";
+    OrderserviceRestService orderService = getServiceClientFactory().create(OrderserviceRestService.class,
+        new ServiceClientConfigBuilder().host("localhost").authBasic().userLogin(login).userPassword(password)
+            .buildMap());
+    return orderService;
+  }
 ----
 
-Please notice that we extend class AbstractRestServiceTest (which extends SubsystemTest). This class provides some functionality e.g. DbTestHelper e.t.c.
+You need also to add following dependency in the `pom.xml` of the `core` project
+
+[source,xml]
+----
+<dependency>
+  <groupId>com.devonfw.java.starters</groupId>
+  <artifactId>devon4j-starter-cxf-client-rest</artifactId>
+</dependency>
+----
+
+It enables creation of the client factory using the Apache CXF framework.
+
+You can now test your services using the created proxy
 
 [source,java]
 ----
-@SpringBootTest(classes = { RestTestConfig.class,
-SpringBootApp.class }, webEnvironment = WebEnvironment.RANDOM_PORT)
-public abstract class AbstractRestServiceTest extends SubsystemTest {
+  @Test
+  void shouldFindItem() {
 
+    OrderserviceRestService orderService = getOrderService();
 
-  @LocalServerPort
-  protected int port;
+    ItemSearchCriteriaTo searchCriteriaTo = new ItemSearchCriteriaTo();
+    searchCriteriaTo.setName("tacos");
 
+    Page<ItemEto> items = orderService.findItems(searchCriteriaTo);
+    assertThat(items.getNumberOfElements()).isEqualTo(1);
+    assertThat(items.getContent().get(0).getName()).isEqualTo("tacos");
 
-  @Inject
-  private DbTestHelper dbTestHelper;
-
-  @Override
-  protected void doSetUp() {
-
-    super.doSetUp();
-  }
-
-  @Override
-  protected void doTearDown() {
-
-    super.doTearDown();
-  }
-
-  public DbTestHelper getDbTestHelper() {
-
-    return this.dbTestHelper;
   }
 ----
 
-After such definition of OrderServiceRestTest we should be able to simply inject some dependencies and perform the simplest tests:
-[source,java]
-----
-@RunWith(SpringRunner.class)
-@ContextConfiguration(classes = { SpringBootApp.class, OrderServiceRestTestConfig.class })
-public class OrderServiceRestTest extends AbstractRestServiceTest {
+Please implement tests for some of services you have implemented.
 
-	@Inject
-	private OrderServiceRestTestHelper helper;
-
-	@Inject
-	private OrderserviceRestService service;
-
-	@Inject
-	private DbTestHelper dbTestHelper;
-
-	@Inject
-	private Orderservice orderservice;
-
-	@Inject
-	private CustomerRepository customerRepository;
-
-	@Override
-	public void doSetUp() {
-		super.doSetUp();
-		dbTestHelper.resetDatabase();
-	}
-
-	@Override
-	public void doTearDown() {
-		this.service = null;
-		super.doTearDown();
-	}
-
-	@Test
-	public void shouldFindItemByName() {
-		// given
-		OrderCto order = this.helper.createDummyOrderCTO();
-		this.service.saveOrder(order);
-		// when
-		Set<ItemEto> items = this.service.findItemByName(ItemTestData.CORN_NAME);
-		// then
-		assertThat(items).hasSize(1);
-		assertThat(items.iterator().next().getName()).isEqualTo(ItemTestData.CORN_NAME);
-	}
-----
 More about testing: https://github.com/devonfw/devon4j/wiki/guide-testing
 
 
