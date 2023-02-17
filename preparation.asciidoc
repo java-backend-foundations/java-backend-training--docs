@@ -19,7 +19,7 @@ In this training we will use Devon IDE as integrated development environment. Th
 
 === Download
 
-All releases of `devonfw-ide` can be downloaded from https://repo.maven.apache.org/maven2/com/devonfw/tools/ide/devonfw-ide-scripts/[maven central]. Please download the file https://repo.maven.apache.org/maven2/com/devonfw/tools/ide/devonfw-ide-scripts/2021.12.005/devonfw-ide-scripts-2021.12.005.tar.gz[devonfw-ide-scripts-2021.12.005.tar.gz] (The latest version can be found https://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=com.devonfw.tools.ide&a=devonfw-ide-scripts&v=LATEST&p=tar.gz[here])
+All releases of `devonfw-ide` can be downloaded from https://repo.maven.apache.org/maven2/com/devonfw/tools/ide/devonfw-ide-scripts/[maven central]. Please download the file https://repo.maven.apache.org/maven2/com/devonfw/tools/ide/devonfw-ide-scripts/2021.12.005/devonfw-ide-scripts-2021.12.005.tar.gz[devonfw-ide-scripts-2021.12.005.tar.gz].
 
 === Install
 
