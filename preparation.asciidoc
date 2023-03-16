@@ -47,7 +47,17 @@ devonfw-ide environment variables have been set for C:\projects\jbf-training in 
 $ echo %DEVON_IDE_HOME%
 C:\projects\jbf-training
 
+or
+
+$ echo $DEVON_IDE_HOME
+C:\projects\jbf-training
+
 $ echo %JAVA_HOME%
+C:\projects\jbf-training/software/java
+
+or
+
+$ echo $JAVA_HOME
 C:\projects\jbf-training/software/java
 
 $ javac -version
