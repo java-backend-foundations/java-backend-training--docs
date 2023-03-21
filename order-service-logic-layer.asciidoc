@@ -241,7 +241,7 @@ To generate the logic pleas select the `CustomerEntity`, run the CobiGen and sel
 - CTO's
 - CRUD UC logic
 
-image::images/devon4j/10.BusinessLogic/CobigenLogicGeneration.JPG[width="832", link="images/devon4j/10.BusinessLogic/CobigenLogicGeneration.JPG"]
+image::images/devon4j/10.BusinessLogic/CobigenLogicGenerationNew.JPG[width="832", link="images/devon4j/10.BusinessLogic/CobigenLogicGeneration.JPG"]
 
 After running the generator following changes will be performed
 
