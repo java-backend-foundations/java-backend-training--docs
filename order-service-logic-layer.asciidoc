@@ -267,7 +267,7 @@ In the previosu steps you have implemented manually or generated the CRUD part o
 At first we shall generate some testdata builders. We can do it at entity level to generate entity data builder or at Eto level.
 For our purposes we will use Eto more often. Builder generation can be done by IDE plugins or using CobiGen:
 
-image::images/devon4j/10.BusinessLogic/EtoBuilderGeneration.JPG[width="798", link="images/devon4j/10.BusinessLogic/EtoBuilderGeneration.JPG"]
+image::images/devon4j/10.BusinessLogic/EtoBuilderGeneration.JPG[width="798", link="images/devon4j/10.BusinessLogic/EtoBuilderGenerationNew.JPG"]
 
 ==== Testdata preparation
 
