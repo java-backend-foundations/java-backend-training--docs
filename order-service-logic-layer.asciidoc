@@ -285,9 +285,9 @@ You can use this interfaces to define builder that can be used later on in testi
   /**
    * The constant CHEESE.
    */
-  ItemEtoBuilder CHEESE = ItemEtoBuilder.anItemEto()
-      .withName("cheese")
-      .withPrice(12.50);
+  ItemEtoBuilder CHEESE = new ItemEtoBuilder()
+      .name("cheese")
+      .price(12.50);
 ----
 
 ==== Testclass definition
