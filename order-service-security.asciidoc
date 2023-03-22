@@ -58,4 +58,4 @@ TIP: In case of problems please look how users and its roles/authorities are con
 * Change method configureGlobal in class BaseUserDetailsService to use database.
 * Verify that after addition of new user to database you can log in using new credentials.
 +
-. **Extend your application that user can use some header token or cookie value to authenticate (token value may be username - same as on example during presentation). You can base on JsonUsernamePasswordAuthenticationFilter to do that
+. **Extend your application that user can use some custom header token or cookie value to authenticate under some new endpoint. You can base on JsonUsernamePasswordAuthenticationFilter to do that.
