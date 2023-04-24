@@ -61,6 +61,22 @@ Default locale: en_US, platform encoding: Cp1252
 OS name: "windows 10", version: "10.0", arch: "amd64", family: "windows"
 --------
 
+You should see JDK 11 installed. If another version was installed please add following entry to the `conf\devon.properties` file 
+
+[source,bash]
+--------
+export JAVA_VERSION=11.0.9.1_1
+--------
+
+and type
+
+[source,bash]
+--------
+$ devon java setup
+--------
+
+Repeat the commands above and you should see JDK 11 was installed.
+
 
 == Test the environment
 
