@@ -66,6 +66,7 @@ You should see JDK 11 installed. If another version was installed please add fol
 [source,bash]
 --------
 export JAVA_VERSION=11.0.9.1_1
+export NODE_VERSION=v14.17.6
 --------
 
 and type
