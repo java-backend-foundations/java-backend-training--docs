@@ -23,9 +23,8 @@ Please download the file https://repo.maven.apache.org/maven2/com/devonfw/tools/
 
 === Install
 
-Create a central folder like `C:\projects`. Inside this folder create a sub-folder for your new project such as `jbf-training` and extract the contents of the downloaded archive (`devonfw-ide-scripts-*.tar.gz`) into this new folder. Run the command `setup.bat` in this folder. When asked, please select the default options.
-
-If you have problems with downloadinh JDK or NodeJS please add following entry to the `conf\devon.properties` file 
+Create a central folder like `C:\projects`. Inside this folder create a sub-folder for your new project such as `jbf-training` and extract the contents of the downloaded archive (`devonfw-ide-scripts-*.tar.gz`) into this new folder. 
+Create a directory `conf` and next a file `devon.properties` under this directory. Copy folloing content into the file `conf\devon.properties`
 
 [source,bash]
 --------
@@ -33,10 +32,9 @@ export JAVA_VERSION=11.0.9.1_1
 export NODE_VERSION=v14.17.6
 --------
 
-and run `setup.bat` again.
+Run the command `setup.bat` in this folder. When asked, please select the default options.
 
 `devonfw-ide` automatically integrates with Windows-Explorer during setup. If you need more options please refer to the https://github.com/devonfw/ide/blob/master/documentation/integration.asciidoc[integration] documentation.
-
 
 = Devon CLI
 
