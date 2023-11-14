@@ -101,12 +101,11 @@ To test the environment please generate a sample application, build it and run a
 --------
 $ cd workspaces\main\
 
-$ devon java create com.example.application.sampleapp -DarchetypeVersion=2021.04.003
+$ mvn -DarchetypeVersion=2021.04.003 -DarchetypeGroupId=com.devonfw.java.templates -DarchetypeArtifactId=devon4j-template-server archetype:generate -DgroupId=com.example.application -DartifactId=sampleapp -Dversion=1.0.0-SNAPSHOT -Dpackage=com.devonfw.application.sampleapp
 
 or
 
-$ mvn -DarchetypeVersion=2021.04.003 -DarchetypeGroupId=com.devonfw.java.templates -DarchetypeArtifactId=devon4j-template-server archetype:generate -DgroupId=com.example.application -DartifactId=sampleapp -Dversion=1.0.0-SNAPSHOT -Dpackage=com.devonfw.application.sampleapp
-
+$ devon java create com.example.application.sampleapp -DarchetypeVersion=2021.04.003
 --------
 
 Next build the application
