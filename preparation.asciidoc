@@ -134,14 +134,6 @@ $ devon build
 
 === Run the sample application in IDE
 
-`devon-ide` provides 3 IDE solutions
-
-* https://github.com/devonfw/ide/blob/master/documentation/eclipse.asciidoc[Eclipse]
-* https://github.com/devonfw/ide/blob/master/documentation/vscode.asciidoc[Visual Studio Code]
-* https://github.com/devonfw/ide/blob/master/documentation/intellij.asciidoc[Intelij]
-
-You will use in this training the https://github.com/devonfw/cobigen[Cobigen] code generator which is integrated only with Eclipse. 
-
 Please start eclipse using
 
 [source,bash]
