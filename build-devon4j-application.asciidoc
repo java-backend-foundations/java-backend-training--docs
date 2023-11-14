@@ -64,56 +64,6 @@ $ cd order-service
 $ mvn clean install
 --------
 
-=== Using the Eclipse
-
-To create a new application using Eclipse, you should have `devon-ide` installed. Please open command shell in `workspaces\main` and start Eclipse using
-
-[source,bash]
---------
-$ devon
-devonfw-ide environment variables have been set for C:\projects\jbf-training in workspace main
-
-devon eclipse
---------
-
-Then, follow below steps to create a new application:
-
-==== Step 1: Create new Maven project
-
-Go to *`File > New > Maven Project`*. If you don’t see the option, click *`File > New > Other`* and use the filter to search the option Maven Project
-
-Set `workspaces\main\devonfw-java-backend-training\order-service` as the location
-
-image::images/devon4j/3.BuildYourOwn/new-app-1.png[width="750", link="images/devon4j/3.BuildYourOwn/new-app-1.png"]
-
-==== Step 2: Choose the archetype
-
-In the *`New Maven Project`* wizard, you need to choose the `devon4j-template-server` archetype, as shown in below image. Please uncheck the option *`Show the last version of Aechetype only`* and chose the version *`2021.04.003`* of the archetype.
-
-image::images/devon4j/3.BuildYourOwn/new-app-2.png[width="750", link="images/devon4j/3.BuildYourOwn/new-app-2.png"]
-
-[NOTE]
-====
-If you are not able to access the archetype, then try adding the archetype repository manually. You can do it with the _Configure_ button located next to the _Catalogs_ dropdown and then clicking the _Add Remote Catalog_ button. Finally, you need to add the repository _URL_ https://repo1.maven.org/maven2 and as _Description_ you can use _Maven Central_.
-
-image::images/devon4j/3.BuildYourOwn/new-app-3.png[width="500", link="images/devon4j/3.BuildYourOwn/new-app-3.png"]
-
-Use the _Verify_ button to check the connection. Subsequently, you will see a message with the amount of found archetypes.
-====
-
-==== Step 3: Configure the application properties
-Fill the _Group Id_, _Artifact Id_, _Version_ and _Package_ for your project. Also in Properties available from archetype section update the _dbtype_ parameter
-
-- _Group Id_: `com.devonfw.app.java`
-- _Artifact Id_: `order-service`
-- _Version_: `0.0.1-SNAPSHOT`
-- _Package_: `com.devonfw.app.java.order`
-- _dbtype_: `h2`
-
-image::images/devon4j/3.BuildYourOwn/new-app-4.png[width="750", link="images/devon4j/3.BuildYourOwn/new-app-4.png"]
-
-Click on the _Finish_ button and the project will be ready for execution.
-
 
 == Import the app
 
@@ -385,6 +335,57 @@ Now run again the app and try again the same call. You should obtain the data of
 
 image::images/devon4j/3.BuildYourOwn/simple-get-2.png[, link="images/devon4j/3.BuildYourOwn/simple-get-2.png"]
 
+= Appendix
+
+== Create application using the Eclipse
+
+To create a new application using Eclipse, you should have `devon-ide` installed. Please open command shell in `workspaces\main` and start Eclipse using
+
+[source,bash]
+--------
+$ devon
+devonfw-ide environment variables have been set for C:\projects\jbf-training in workspace main
+
+devon eclipse
+--------
+
+Then, follow below steps to create a new application:
+
+=== Step 1: Create new Maven project
+
+Go to *`File > New > Maven Project`*. If you don’t see the option, click *`File > New > Other`* and use the filter to search the option Maven Project
+
+Set `workspaces\main\devonfw-java-backend-training\order-service` as the location
+
+image::images/devon4j/3.BuildYourOwn/new-app-1.png[width="750", link="images/devon4j/3.BuildYourOwn/new-app-1.png"]
+
+=== Step 2: Choose the archetype
+
+In the *`New Maven Project`* wizard, you need to choose the `devon4j-template-server` archetype, as shown in below image. Please uncheck the option *`Show the last version of Aechetype only`* and chose the version *`2021.04.003`* of the archetype.
+
+image::images/devon4j/3.BuildYourOwn/new-app-2.png[width="750", link="images/devon4j/3.BuildYourOwn/new-app-2.png"]
+
+[NOTE]
+====
+If you are not able to access the archetype, then try adding the archetype repository manually. You can do it with the _Configure_ button located next to the _Catalogs_ dropdown and then clicking the _Add Remote Catalog_ button. Finally, you need to add the repository _URL_ https://repo1.maven.org/maven2 and as _Description_ you can use _Maven Central_.
+
+image::images/devon4j/3.BuildYourOwn/new-app-3.png[width="500", link="images/devon4j/3.BuildYourOwn/new-app-3.png"]
+
+Use the _Verify_ button to check the connection. Subsequently, you will see a message with the amount of found archetypes.
+====
+
+=== Step 3: Configure the application properties
+Fill the _Group Id_, _Artifact Id_, _Version_ and _Package_ for your project. Also in Properties available from archetype section update the _dbtype_ parameter
+
+- _Group Id_: `com.devonfw.app.java`
+- _Artifact Id_: `order-service`
+- _Version_: `0.0.1-SNAPSHOT`
+- _Package_: `com.devonfw.app.java.order`
+- _dbtype_: `h2`
+
+image::images/devon4j/3.BuildYourOwn/new-app-4.png[width="750", link="images/devon4j/3.BuildYourOwn/new-app-4.png"]
+
+Click on the _Finish_ button and the project will be ready for execution.
 
 
 === link:devon4j-components.asciidoc[Next chapter: Add a component to your app]
