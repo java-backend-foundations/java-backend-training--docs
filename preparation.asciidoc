@@ -24,7 +24,7 @@ Please download the file https://repo.maven.apache.org/maven2/com/devonfw/tools/
 === Install
 
 Create a central folder like `C:\projects`. Inside this folder create a sub-folder for your new project such as `jbf-training` and extract the contents of the downloaded archive (`devonfw-ide-scripts-*.tar.gz`) into this new folder. 
-Create a directory `conf` and next a file `devon.properties` under this directory. Copy folloing content into the file `conf\devon.properties`
+Create a directory `conf` and next a file `devon.properties` under this directory. Copy following content into the file `conf\devon.properties`
 
 [source,bash]
 --------
