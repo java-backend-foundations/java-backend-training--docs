@@ -1,4 +1,4 @@
-= Devonfw Java Backend Training - Lab Instructions
+= Java Backend Training - Lab Instructions
 
 == Order Service
 
