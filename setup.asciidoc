@@ -1,0 +1,112 @@
+:toc: macro
+
+= Setup the project
+
+toc::[]
+
+== Setup the development environment
+
+We assume you have prepared your environment like described in link:preparation.asciidoc[preparation instruction]
+
+== Creating the Application
+
+Let's create a Spring Boot application using the Spring Initializer. Follow these steps to generate your project:
+
+. Go to the Spring Initializer website: link:https://start.spring.io[https://start.spring.io].
+. Fill out the form with the following details:
++
+--
+- *Project*: Maven Project
+- *Language*: Java
+- *Spring Boot*: 3.2.3
+- *Group*: `com.capgemini.training`
+- *Artifact*: `todo-app`
+- *Package name*: `com.capgemini.training.todo`
+- *Packaging*: Jar
+- *Java*: Select the version corresponding to your JDK installation (`21`)
+--
+. Under *Dependencies*, add the following:
++
+--
+- Spring Web
+- Lombok
+- H2 Database
+- Spring Data JPA
+- Spring Boot Actuator
+- Flyway Migration
+--
+. Once all information is filled in, click on the *Generate* button to download your project.
+
+Here is how your Spring Initializer should look like with the chosen options:
+
+image::images/spring-initializer-todo.png[Spring Initializer]
+
+. Unzip the downloaded project in a convenient location on your system, like `C:\trainings\jbf\workspace`. 
+. Open terminal, go to the location where you have extracted the sample application and build it using maven
++
+--
+[source,bash]
+--------
+mvn clean package
+--------
+--
+. Open the project in your preferred IDE.
+. Explore the project structure. You'll notice that Spring Initializer has created a basic project setup with the selected dependencies included in the `pom.xml` file.
+
+== Configuring the application
+
+. Add following parameters to the `application.properties` file to enable the H2 Console and configure the H2 data base
++
+--
+[source,properties]
+----
+spring.h2.console.enabled=true
+
+spring.datasource.url=jdbc:h2:mem:todoapp
+spring.datasource.username=sa
+spring.datasource.password=password
+----
+--
+. Add following parameters to the `application.properties` file to enable more verbosity from the actuator endpoints
++
+--
+[source,properties]
+----
+management.endpoint.health.show-components=always
+management.endpoint.health.show-details=always
+management.endpoints.web.exposure.include=*
+----
+--
+. Add following parameters to the `application.properties` file to configure the Flyway
++
+--
+[source,properties]
+----
+spring.flyway.locations=classpath:db/migration
+spring.flyway.enabled=true
+spring.flyway.clean-on-validation-error=true
+----
+--
+
+== Testing  the application
+
+. Look for the `TodoAppApplication.java` class and run the application from your IDE. You should see output like this
++
+--
+[source,bash]
+--------
+..........
+... : H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:todoapp'
+..........
+..........
+... : Exposing 13 endpoint(s) beneath base path '/actuator'
+... : Tomcat started on port 8080 (http) with context path ''
+... : Started TodoAppApplication in 17.632 seconds (process running for 18.605)
+... : Initializing Spring DispatcherServlet 'dispatcherServlet'
+... : Initializing Servlet 'dispatcherServlet'
+... : Completed initialization in 1 ms
+--------
+--
+. [.red]>>#TODO finish the instruction
+
+You're now ready to start developing your Spring Boot application!

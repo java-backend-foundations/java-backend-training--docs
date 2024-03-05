@@ -1,10 +1,15 @@
+:toc: macro
 = Java Backend Training - Lab Instructions
 
-== Order Service
+toc::[]
 
-- link:DEPRECATED-order-service.asciidoc[Order Service Design]
+== Preparation
+
+- link:preparation.asciidoc[Preparation]
 
 == Training Instructions
 
-- link:DEPRECATED-preparation.asciidoc[Preparation for the training]
-- link:training-instructions.asciidoc[devon4j Getting Started]
+- link:setup.asciidoc[Setup]
+- ...
+- link:task-service-dataaccess-layer.asciidoc[Task Service - Data Access Layer]
+- ...

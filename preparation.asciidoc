@@ -1,0 +1,143 @@
+:toc: macro
+
+= Preparation for the training
+
+toc::[]
+
+== Setup the development environment
+
+Before we dive into the Spring Boot training, please ensure your development environment is ready by downloading and setting up the following software on your Windows machine.
+
+[NOTE]
+====
+If you want to avoid problems during the training, please DO NOT use paths containing spaces like `C:\Program Files`
+====
+
+=== Software List
+
+- *Git for Windows*: link:https://git-scm.com/download/win[Download]
+- *Apache Maven*: link:https://maven.apache.org/download.cgi[Download]
+- *JDK 21*:
+  ** Oracle JDK: link:https://www.oracle.com/java/technologies/javase/jdk21-archive-downloads.html[Download]
+  ** OpenJDK (Adoptium): link:https://adoptium.net/[Download]
+- *IDE (Choose One)*:
+  ** IntelliJ IDEA: link:https://www.jetbrains.com/idea/download/#section=windows[Download]
+  ** Eclipse: link:https://www.eclipse.org/downloads/[Download]
+  ** Visual Studio Code (VSCode): link:https://code.visualstudio.com/Download[Download]
+- *Postman*: link:https://www.postman.com/downloads/[Download]
+
+=== Setup Instructions
+
+. Download and install *Git for Windows* from the provided link.
+. Download *Apache Maven* and extract it to a convenient location on your system (e.g. `C:\Programs`). Add the location to the `PATH` environment variable.
+. Choose and download *JDK 21* from either the Oracle JDK or OpenJDK options and install it.
+. Select and download an *IDE* of your choice (IntelliJ IDEA, Eclipse, or VSCode) for developing Spring Boot applications.
+. Download and install *Postman* for testing your Spring Boot application's RESTful services.
+. Create an *Github* account (if you don't have any yet).
+
+Please follow the installation instructions on the download pages for each piece of software.
+
+=== Test the environment
+
+- Please open terminal and test the environment. The outputs below may differ from the outputs on your environment. 
+- Please test the installed JDK version
++
+--
+[source,bash]
+--------
+javac -version
+--------
+--
+You should see in the output the same version you have installed, like this
++
+--
+[source,bash]
+--------
+javac 21.0.2
+--------
+--
+If you don't see the proper version, check whether your JDK installation is added to the `PATH` environment variable or whether you have set the `JAVA_HOME` variable properly.
+- Please test the Maven installation
++
+--
+[source,bash]
+--------
+mvn -v
+--------
+--
+You should see the output like this
++
+--
+[source,bash]
+--------
+Apache Maven 3.9.5 (57804ffe001d7215b5e7bcb531cf83df38f93546)
+Maven home: /home/ksobkowiak/.m2/wrapper/dists/apache-maven-3.9.5-bin/32db9c34/apache-maven-3.9.5
+Java version: 21.0.2, vendor: Eclipse Adoptium, runtime: /home/ksobkowiak/.sdkman/candidates/java/21.0.2-tem
+Default locale: en, platform encoding: UTF-8
+OS name: "linux", version: "5.15.133.1-microsoft-standard-wsl2", arch: "amd64", family: "unix"
+--------
+--
+You should see the Maven version `3.8+`. Maven outpu should print the usage of the proper JDK version.
+
+== Creating a Simple Spring Boot Application
+
+Now that your development environment is ready, let's create a simple Spring Boot application using the Spring Initializer. Follow these steps to generate your project:
+
+. Go to the Spring Initializer website: link:https://start.spring.io[https://start.spring.io].
+. Fill out the form with the following details:
++
+--
+- *Project*: Maven Project
+- *Language*: Java
+- *Spring Boot*: 3.2.3
+- *Group*: `com.capgemini.training`
+- *Artifact*: `sample`
+- *Package name*: `com.capgemini.training.sample`
+- *Packaging*: Jar
+- *Java*: Select the version corresponding to your JDK installation (`21`)
+--
+. Under *Dependencies*, add the following:
++
+--
+- Spring Web
+--
+. Once all information is filled in, click on the *Generate* button to download your project.
+
+Here is how your Spring Initializer should look like with the chosen options:
+
+image::images/spring-initializer-sample.png[Spring Initializer]
+
+. Unzip the downloaded project in a convenient location on your system, like `C:\trainings\jbf\workspace`. 
+. Open terminal, go to the location where you have extracted the sample application and build it using maven
++
+--
+[source,bash]
+--------
+mvn clean package
+--------
+--
+. Run the application uasing
++
+--
+[source,bash]
+--------
+mvn spring-boot:run
+--------
+--
+You should see output like this
++
+--
+[source,bash]
+--------
+... : Tomcat started on port 8080 (http) with context path ''
+... : Started SanpleApplication in 17.632 seconds (process running for 18.605)
+... : Initializing Spring DispatcherServlet 'dispatcherServlet'
+... : Initializing Servlet 'dispatcherServlet'
+... : Completed initialization in 1 ms
+--------
+--
+. Open the project in your preferred IDE.
+. Explore the project structure. You'll notice that Spring Initializer has created a basic project setup with the selected dependencies included in the `pom.xml` file.
+. Look for the `SampleApplication.java` class and run the application from your IDE.
+
+You're now ready to start developing your Spring Boot application!
