@@ -2,9 +2,9 @@
 
 == Order Service
 
-- link:order-service.asciidoc[Order Service Design]
+- link:DEPRECATED-order-service.asciidoc[Order Service Design]
 
 == Training Instructions
 
-- link:preparation.asciidoc[Preparation for the training]
+- link:DEPRECATED-preparation.asciidoc[Preparation for the training]
 - link:training-instructions.asciidoc[devon4j Getting Started]

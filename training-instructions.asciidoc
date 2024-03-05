@@ -7,10 +7,10 @@ toc::[]
 
 == Training Instructions
 
-- link:build-devon4j-application.asciidoc[Build your own devon4j application]
-- link:devon4j-components.asciidoc[devon4j application components]
-- link:devon4j-layers.asciidoc[devon4j layers]
+- link:DEPRECATED-build-devon4j-application.asciidoc[Build your own devon4j application (DEPRECATED)]
+- link:DEPRECATED-devon4j-components.asciidoc[devon4j application components (DEPRECATED)]
+- link:DEPRECATED-devon4j-layers.asciidoc[devon4j layers (DEPRECATED)]
 - link:task-service-dataaccess-layer.asciidoc[Task Service - Data Access Layer]
-- link:order-service-logic-layer.asciidoc[Order Service - Business Logic Layer]
-- link:order-service-services-layer.asciidoc[Order Service - Services Layer]
-- link:order-service-security.asciidoc[Order Service - Security]
+- link:DEPRECATED-order-service-logic-layer.asciidoc[Order Service - Business Logic Layer (DEPRECATED)]
+- link:DEPRECATED-order-service-services-layer.asciidoc[Order Service - Services Layer (DEPRECATED)]
+- link:DEPRECATED-order-service-security.asciidoc[Order Service - Security (DEPRECATED)]
