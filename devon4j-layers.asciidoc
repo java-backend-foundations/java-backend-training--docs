@@ -333,4 +333,4 @@ public class BookingDaoImpl extends ApplicationDaoImpl<BookingEntity> implements
 
 The implementation of the _findBookings_ uses http://www.querydsl.com/[queryDSL] to manage the dynamic queries.
 
-=== link:order-service-dataaccess-layer.asciidoc[Next chapter: Order Service - Data Access Layer]
+=== link:task-service-dataaccess-layer.asciidoc[Next chapter: Task Service - Data Access Layer]
