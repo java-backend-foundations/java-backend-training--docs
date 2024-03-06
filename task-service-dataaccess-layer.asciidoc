@@ -8,7 +8,7 @@ Then we will map it into entities model and provide operations for management of
 
 == Create your component
 
-After you have completed your own link:build-devon4j-application.asciidoc[devon4j app creation] [.red]#>>TODO app creation link update<<#, we are going to create our first app component.
+After you have completed your own link:task-service-setup.asciidoc[Task Service Setup], we are going to create our first app component.
 
 Going back to our example application, link:order-service.asciidoc[Order Service] >>TODO update link here<<, we need to provide basic functionalities:
 
