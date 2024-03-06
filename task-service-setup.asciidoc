@@ -39,7 +39,7 @@ Let's create a Spring Boot application using the Spring Initializer. Follow thes
 
 Here is how your Spring Initializer should look like with the chosen options:
 
-image::images/spring-initializer-todo.png[Spring Initializer]
+image::images/setup/spring-initializer-todo.png[Spring Initializer]
 
 . Unzip the downloaded project in a convenient location on your system, like `C:\trainings\jbf\workspace`. 
 . Open terminal, go to the location where you have extracted the sample application and build it using maven
@@ -107,6 +107,20 @@ spring.flyway.clean-on-validation-error=true
 ... : Completed initialization in 1 ms
 --------
 --
-. [.red]>>#TODO finish the instruction
+. Please open the url http://localhost:8080/actuator/health to check whether the application is running correctly. You should get result like this
++
+--
+image::images/setup/actuator-health.png[Health Endpoint]
+--
+. While implementing the application you will need access to the *H2 Database*. Open the *H2 Console* using the following url http://localhost:8080/h2-console/. Please use the correct access data you have configured previously.
++
+--
+image::images/setup/h2-console-login.png[H2 Console - login]
+--
+After successful login you should see following content
++
+--
+image::images/setup/h2-console-content.png[H2 Console - content]
+--
 
 You're now ready to start developing your Spring Boot application!
