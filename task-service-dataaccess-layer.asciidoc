@@ -164,7 +164,7 @@ Create new class TaskListEntity.
 Mark table with @Entity annotation, a @Table annotation and set a name for a table which represents the Entity in the database.
 Additionally, mark the class with @Getters and @Setters annotations from lombok - this will allow a getter and setter generation "in the background", without adding them in the class.
 
-Create there private attributes basing on the schema (id, version, name). We will add the relationship between TaskItemEntity later on.
+Create there private attributes basing on the schema (id, version, name). We will add the bi-directional relationship with TaskItemEntity later on.
 Mark the id attribute with @Id annotation and @GeneratedValue(strategy = GenerationType.IDENTITY) which describes the generation strategy for the id.
 Mark the version attribute with @Version annotation which specifies, that the attribute will be automatically incremented and used for versioning control. 
 
@@ -177,91 +177,52 @@ Mark the version attribute with @Version annotation which specifies, that the at
 public class TaskListEntity {
 ----
 
-You can run the application and it should start correctly.
+==== PersonEntity
+
+Next to the _TaskListEntity_ create _PersonEntity_. Mark the class with proper annotations.
+Prepare attributes as shown in the schema. For Id and Version use the same annotations, as in TaskListEntity.
+
+Now, lets implement the uni-directional @OneToOne relationship between the person and the task list. PersonEntity will be the owner of the relationship.
+Add a private attribute of type TaskListEntity in PersonEntity.
+Mark it with @OneToOne annotation.
+Additionaly, you can add a @JoinColumn annotation, which will precisely describe what is the name of the Foreign Key column in the database in the PERSON table, and which column it references in TASK_LIST table.
+
+[source,java]
+----
+@OneToOne
+@JoinColumn(name = "TASK_LIST_ID", referencedColumnName = "ID")
+private TaskListEntity taskList;
+----
+
+==== TaskItemEntity
+
+Create new entity _TaskItemEntity_. Mark the class with proper annotations.
+
+First, add all attributes described in the structure and use appropriate annotations for id and version. 
+
+Now we will create a bi-directional @ManyToOne relationship with _TaskListEntity_.
+
+TaskItemEntity is the owning side and will hold the information about the TaskListEntity. Add the private attribute of type _TaskListEntity_ in _TaskItemEntity_. Mark it with @ManyToOne annotation. You can additionally specify the fetchType, so that the loading strategy is lazy.
+
+[source, java]
+----
+@ManyToOne(fetch = FetchType.LAZY)
+private TaskListEntity taskList;
+----
+
+Even though _TaskItemEntity_ is the owner, we also want _TaskListEntity_ to hold information about the tasks connected with the list.
+Edit the _TaskListEntity_ and add an additional private attribute of type _List<TaskItemEntity_. Mark the attribute with @OneToMany annotation. Add an information, which attribute is this relationship mapped by, describe the fetch type (LAZY in this case, though it's a default behaviour) and the cascade (for the sake of the training we will use CascadeType.ALL).
+
+[source, java]
+----
+@OneToMany(mappedBy = "taskList", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+private List<TaskItemEntity> items;
+----
+
+You are ready to go!
+Run the application and check if database schema maps correctly into entities model.
 
 [.red>>TODO fix the description from here on<<#
-
-==== CustomerEntity
-
-Next to the _ItemEntity_ create _CustomerEntity_ which should inherit from _ApplicationPersistenceEntity_.
-Prepare attributes as shown in the schema (skip orders attribute until we create OrderEntity).
-Generate getters and setters.
-Generate  _Customer_ interface for the entity same way we did it for _ItemEntity_.
-
-==== OrderEntity
-
-In component order-service-api com.devonfw.app.java.order.orderservice.common.api create _OrderStatus_ enum which will be used as status in _OrderEntity_.
-[source,java]
-----
-public enum OrderStatus {
-	NEW, PREPARING, PREPARED, SERVED, PAID, CANCELLED
-}
-----
-
-Next to other entities create _OrderEntity_. It should also inherit from _ApplicationPersistenceEntity_.
-Prepare attributes as shown in the schema.
-Generate getters and setters.
-Generate  _Order_ interface for the entity.
-
-Above getters add needed annotations:
-
-- As default, enum values are saved as Integer in the database. To have it's value as String, change is needed:
-+
-[source,java]
-----
-@Enumerated(EnumType.STRING)
-public OrderStatus getStatus() {
-  return status;
-}
-----
-- Add mapping for relation to _CustomerEntity_:
-+
-[source,java]
-----
-@ManyToOne
-@JoinColumn(name = "ownerId")
-public CustomerEntity getOwner() {
-  return owner;
-}
-----
-- Check method getOwnerId, it is marked with @Transient annotation to not map owner twice (since we have relation specified also by getOwner() method):
-+
-[source,java]
-----
-@Transient
-	public Long getOwnerId() {
-		if (this.getOwner() != null)
-			return this.getOwner().getId();
-		return null;
-	}
-
-	public void setOwnerId(Long ownerId) {
-		CustomerEntity e = new CustomerEntity();
-		e.setId(ownerId);
-		this.setOwner(e);
-	}
-----
-- Add mapping for relation to _ItemEntity_:
-+
-[source,java]
-----
-@ManyToMany
-@JoinTable(name = "OrderPosition", joinColumns = @JoinColumn(name = "orderId", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "itemId", referencedColumnName = "id"))
-public Set<ItemEntity> getOrderPositions() {
-  return orderPositions;
-}
-----
-Adjust _CustomerEntity_ and add there relation to _OrderEntity_ with annotation showing that this relation is mapped only in OrderSummary table.
-+
-[source,java]
-----
-@OneToMany(mappedBy = "owner")
-public Set<OrderEntity> getOrders() {
-  return orders;
-}
-----
-
-Run application and check that schema from database maps correctly into entities model.
 
 === Repositories
 
