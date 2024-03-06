@@ -9,7 +9,8 @@ toc::[]
 
 == Training Instructions
 
-- link:setup.asciidoc[Setup]
+- link:task-service-setup.asciidoc[Setup]
 - ...
 - link:task-service-dataaccess-layer.asciidoc[Task Service - Data Access Layer]
 - ...
+- link:task-service-services-layer.asciidoc[Task Service - Services Layer]
