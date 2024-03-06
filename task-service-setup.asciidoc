@@ -39,7 +39,7 @@ Let's create a Spring Boot application using the Spring Initializer. Follow thes
 
 Here is how your Spring Initializer should look like with the chosen options:
 
-image::images/spring-initializer-todo.png[Spring Initializer]
+image::images/setup/spring-initializer-todo.png[Spring Initializer]
 
 . Unzip the downloaded project in a convenient location on your system, like `C:\trainings\jbf\workspace`. 
 . Open terminal, go to the location where you have extracted the sample application and build it using maven

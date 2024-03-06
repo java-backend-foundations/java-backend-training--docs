@@ -105,7 +105,7 @@ Now that your development environment is ready, let's create a simple Spring Boo
 
 Here is how your Spring Initializer should look like with the chosen options:
 
-image::images/spring-initializer-sample.png[Spring Initializer]
+image::images/setup/spring-initializer-sample.png[Spring Initializer]
 
 . Unzip the downloaded project in a convenient location on your system, like `C:\trainings\jbf\workspace`. 
 . Open terminal, go to the location where you have extracted the sample application and build it using maven
