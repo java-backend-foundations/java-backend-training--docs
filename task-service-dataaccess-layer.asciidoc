@@ -45,9 +45,7 @@ We will be using flyway to migrate our database scheme.
 
 You can check that your schema is valid running TodoAppApplication.java which recreates schema after each run. Created schema can be found in the H2 console.
 
-[.red]#>>TODO update image<<#
-
-image::images/devon4j/6.Dataaccess/orderservice_db_schema.png[width="700", link="images/devon4j/6.Dataaccess/orderservice_db_schema.png"]
+image::images/devon4j/6.Dataaccess/taskservice_database_structure.png[width="900", link="images/devon4j/6.Dataaccess/taskservice_database_structure.png"]
 
 Lets start with the database schema. Create a new sql file _V0001__Create_schema.sql_ in todo-app/src/main/resources/db/migration/1.0/ folder.
 
