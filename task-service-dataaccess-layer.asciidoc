@@ -10,15 +10,13 @@ Then we will map it into entities model and provide operations for management of
 
 After you have completed your own link:task-service-setup.asciidoc[Task Service Setup], we are going to create our first app component.
 
-Going back to our example application, link:order-service.asciidoc[Order Service] >>TODO update link here<<, we need to provide basic functionalities:
+Going back to our example application, link:task-service.asciidoc[Task Service], we need to provide basic functionalities:
 
-[.red]>>#TODO update functionalities<<#
-
-- increase price of the item with specified name.
-- remove customer by id.
-- create order with two positions and owner specified.
-- find orders from given day with specified status.
-- find items by name match (LIKE) ordered by name.
+- Create `Person` with a `TaskList`
+- Create/Read/Update/Delete `TaskList` with its `TaskItems`
+- Create `TaskList` with the given name and given number of `TaskItems` (`TaskItems` should have some arbitrary data)
+- Finding `TaskList` by name
+- Finding overdue and uncompleted `TaskItems`
 
 To accomplish that we are going to work over three entities: _PersonEntity_, _TaskItemEntity_, _TaskListEntity_.
 
@@ -590,4 +588,4 @@ but the test or app does not run.
 
 
 
-=== link:order-service-logic-layer.asciidoc[Next chapter: Order Service - Business Logic Layer]
+=== link:task-service-logic-layer.asciidoc[Next chapter: Task Service - Business Logic Layer]

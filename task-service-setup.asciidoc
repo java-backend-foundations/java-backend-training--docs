@@ -124,3 +124,5 @@ image::images/setup/h2-console-content.png[H2 Console - content]
 --
 
 You're now ready to start developing your Spring Boot application!
+
+=== link:task-service.asciidoc[Next chapter: Task Service]

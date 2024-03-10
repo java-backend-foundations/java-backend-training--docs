@@ -1,0 +1,473 @@
+:toc: macro
+
+= Task Service - Business Logic Layer
+
+In this chapter we are going to create business logic layer for already implemented database queries. We are going to prepare UseCases together with Transfer Objects and corresponding tests.
+
+The chapter contains 4 exercises -- the first two are essential, third and forth exercise are optional and they done in any order.
+
+toc::[]
+
+== Design of the Logic Layer and implementation of the first CRUD Use Cases
+
+To get familiar with the structure of the Business Logic Layer will start with the implementation of very basic CRUD (**C**reate, **R**ead, **U**pdate, **D**elete) logic. We are going to create Transfer Objects, add Use Case Interfaces, implement and test them. If You are familiar with the TDD approach (or just want to try it out) you may try using TDD instead of creating all the tests at the end of this exercise.
+
+=== Transfer Objects
+
+During the previous exercise You created 3 entities: `PersonEntity`, `TaskListEntity` and `TaskItemEntity`. Now for each entity we will create an Entity Transfer Object (`PersonEto`, `TaskListEto`, `TaskItemEto`).
+
+The Transfer Objects should be located in the following package:
+
+[source,java]
+----
+com.capgemini.training.todo.task.common
+----
+
+Entity Transfer Objects will contain the same properties as the corresponding entity, but they *should not* include any relations or the `version` attribute. You may use _Lombok_ to reduce the number of the boilerplate code. For instance, for `PersonEntity` the corresponding `PersonEto` should look as follows:
+
+[source,java]
+----
+@Data
+@Builder
+public class PersonEto  {
+    private final Long id;
+    private final String email;
+}
+----
+
+We used here two _Lombok_ annotations (`@Data` and `@Builder`). `@Data` is a convenient shortcut annotation that bundles the features of `@ToString`, `@EqualsAndHashCode`, `@Getter` / `@Setter` and `@RequiredArgsConstructor` together. The `@Builder` annotation introduces the Builder pattern into our POJO class.
+
+It is considered to be a good practice to make Transfer Objects immutable (as in the example above). Since Java 14 we can create a record instead of a class:
+
+[source,java]
+----
+@Builder
+public record PersonEto (Long id,
+                         String email) { }
+----
+
+Please implement the Transfer Objects for the remaining entities (`TaskListEto` and `TaskItemEto`) on your own.
+
+=== Use Case interfaces
+
+During this step we will start defining the API for our Business Logic Layer. Therefore, we will create the interfaces for our Use Cases. We are going to implement CRUD operations for two entities: `Person` and `TaskItem`. `TaskList` will be handled during the next steps.
+
+The Use Case Interfaces should be located in the following package:
+
+[source,java]
+----
+com.capgemini.training.todo.task.logic
+----
+
+For each entity we will create the two interfaces -- one for _Read_ and one for _Write_ operations. For `Person` the interfaces should look as follows:
+
+[source,java]
+----
+public interface ManagePersonUc {
+
+    PersonEto savePerson(PersonEto personEto);
+
+    void deletePerson(Long id);
+}
+----
+
+[source,java]
+----
+public interface FindPersonUc {
+
+    List<PersonEto> findAllPersons();
+
+    Optional<PersonEto> findPerson(Long id);
+}
+----
+
+Add similar Interfaces also for `TaskItem`.
+
+=== Use Case implementation
+
+As the next step you should implement the interfaces created in the previous step.
+
+Please locate the Use Case implementations in following package:
+
+[source,java]
+----
+com.capgemini.training.todo.task.logic.impl
+----
+
+Each of the created Use Cases has to be annotated with following annotations:
+
+[source,java]
+----
+@Service
+@Transactional
+----
+
+Each Use Case implementation should implement the corresponding interface. To implement the Use Case methods we need to inject the corresponding `Repository` and just delegate the functionality to the `Repository` methods. During the implementation we will need to map from the `*Entity` to `*Eto` or vice versa. For now, we will do it manually. If You would like to implement an automatic mapping using the _Mapscruct_ framework then please follow the instructions from <<mapstruct>> afterwards.
+
+Please check the following example:
+
+[source,java]
+----
+@Service
+@Transactional
+public class ManagePersonUcImpl implements ManagePersonUc {
+
+    private final PersonRepository personRepository;
+
+    public ManagePersonUcImpl(PersonRepository personRepository) {
+        this.personRepository = personRepository;
+    }
+
+    @Override
+    public PersonEto savePerson(PersonEto personEto) {
+
+        PersonEntity personEntity = toPersonEntity(personEto);
+        personEntity = personRepository.save(personEntity);
+        return toPersonEto(personEntity);
+    }
+
+    @Override
+    public void deletePerson(Long id) {
+        // TODO Implement me!
+    }
+
+    private PersonEntity toPersonEntity(PersonEto personEto) {
+        // TODO Implement me!
+        return null;
+    }
+
+    private PersonEto toPersonEto(PersonEntity personEntity) {
+        // TODO Implement me! Try using builder for the implementation
+        return null;
+    }
+}
+----
+
+Please implement all the Use Cases.
+
+=== Tests
+
+In this part we’ll try to create spring-boot context aware test classes that will check our business logic implementation. For that we’ll create a test class that will be started without web environment context:
+
+[source,java]
+----
+@SpringBootTest(webEnvironment = WebEnvironment.NONE)
+class ManagePersonUcTest {
+
+    @Autowired
+    private ManagePersonUc managePersonUc;
+
+    @Test
+    public void savePerson_shouldCreatePerson() {
+        // ...
+    }
+
+    @Test
+    public void savePerson_shouldUpdatePerson() {
+        // ...
+    }
+
+    @Test
+    public void deletePerson() {
+        // ...
+    }
+}
+----
+
+Now we can implement some tests. Please provide some valid test cases for each method defined in our Use Cases -- please test that each covered entity can be correctly created, updated, deleted and read.
+
+== Implementation of further Use Cases
+
+Until now, we are only able to perform the CRUD operations on `PersonEntity` and `TaskItemEntity`. We cannot however, create `TaskListEntities` as well as fill the relationships between our entities. During this exercise we will add some more sophisticated logic:
+
+- Create `Person` with a `TaskList`
+- Create/Read/Update/Delete `TaskList` with its `TaskItems`
+- Create `TaskList` with the given name and given number of `TaskItems` (`TaskItems` should have some arbitrary data)
+- Finding `TaskList` by name
+- Finding overdue and uncompleted `TaskItems`
+
+=== Transfer Object composition
+
+To be able to create `Person` with a `TaskList` and/or `TaskList` with its `TaskItems` we have to create Composite Transfer Objects containing all the necessary data. Therefore, we will create:
+
+- `PersonCto` which will reference to `PersonEto` and `TaskListEto`
+- `TaskListCto` which will reference to `TaskListEto` and the list of `TaskItemEto`
+
+`PersonCto` should look like this:
+
+[source,java]
+----
+@Data
+@Builder
+public class PersonCto  {
+    private final PersonEto personEto;
+    private final TaskListEto taskListEto;
+}
+----
+
+or like this:
+
+[source,java]
+----
+@Builder
+public record PersonCto (PersonEto personEto,
+                         TaskListEto taskListEto) { }
+----
+
+Please add `TaskListCto` on Your own.
+
+=== Use Case interfaces
+
+NOTE: It may be more convenient to implement the missing logic incrementally -- by adding the new method to the interface, implementing and testing it (instead of adapting all interfaces at once and implementing all of them afterwards).
+
+We can now extend the Use Case interfaces and add the missing logic:
+
+- Extend `ManagePersonUc` by adding the following method:
+
+[source,java]
+----
+PersonCto savePerson(PersonCto personCto);
+----
+
+- Create `ManageTaskListUc` interface with the following methods:
+
+[source,java]
+----
+PersonCto savePerson(PersonCto personCto);
+void deletePerson(Long id);
+----
+
+- Create `FindTaskListUc` interface with the following methods:
+
+[source,java]
+----
+List<TaskListEto> findAllTaskLists();
+Optional<TaskListCto> findTaskList(Long id);
+----
+
+- In the corresponding Use Case interface add a method for creating `TaskList` with the given name and given number of `TaskItems` (`TaskItems` should be created with some arbitrary data)
+- In the corresponding Use Case interface add a method for finding `TaskList` by name
+- In the corresponding Use Case interface add a method for finding overdue and uncompleted `TaskItems`
+
+=== Use Case implementation
+
+Please implement all the unimplemented methods added in the previous step.
+
+=== Tests
+
+Please cover all the newly implemented methods from the previous step with the JUnit tests.
+
+== (Optional) Bean validation using Hibernate Validator
+
+NOTE: This is an optional exercise, if You implemented the previous tasks, feel free to try it out.
+
+In this exercise we will implement the validation of the Transfer Objects using _Hibernate Validator_.
+
+=== Configuration
+
+Starting with Boot 2.3, we need to explicitly add the spring-boot-starter-validation dependency to `pom.xml`. It was also possible to add it via _Spring Initializr_. Please add the following dependency if it is missing:
+
+[source, xml]
+----
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-validation</artifactId>
+</dependency>
+----
+
+=== Constraint definition
+
+_Hibernate Validator_ offers validation annotations that can be applied to the data fields within our classes. For example if we would like to ensure that the `PersonEto` will contain a non-empty, valid email address we can annotate it as follows:
+
+[source,java]
+----
+@Data
+@Builder
+public class PersonEto  {
+    private final Long id;
+    @NotEmpty
+    @Email
+    private final String email;
+}
+----
+
+or if You created a record instead:
+
+[source,java]
+----
+@Builder
+public record PersonEto (Long id,
+                         @NotEmpty @Email String email) { }
+----
+
+You can similarly annotate other fields in ETOs. For example, please make sure that the name of the `TaskList` contains at least 5 characters and the name of the `TaskItem` contains from 2 to 20 characters. Please check this for further reference or help: https://hibernate.org/validator/.
+
+=== Constraint validation
+
+The validation will not work out-of-the box. To enable it we have to put the `@Valid` annotation on the method parameters or fields to tell Spring that we want a method parameter or field to be validated. We should annotate at least the method parameter in the interface, but it is considered a good practice to annotate it also in the implementation. Additionally, we should add a class-level `@Validated` annotation to tell Spring to validate parameters that are passed into a method of the annotated class.
+
+If we want to do it for the `ManagePersonUc` Use Case, then the interface and implementation should look as follows:
+
+[source,java]
+----
+public interface ManagePersonUc {
+
+    PersonEto savePerson(@Valid PersonEto personEto);
+
+    // ...
+}
+----
+
+[source,java]
+----
+@Service
+@Transactional
+@Validated
+public class ManagePersonUcImpl implements ManagePersonUc {
+
+   // ...
+
+    @Override
+    public PersonEto savePerson(@Valid PersonEto personEto) {
+
+        // ...
+    }
+
+    // ...
+}
+----
+
+Please add similar validations for other Use Cases.
+
+=== Tests
+
+Please add some test to verify that the added validations work as expected.
+
+== (Optional) Bean mapping using MapStruct [[mapstruct]]
+
+NOTE: This is an optional exercise, if You implemented the previous tasks, feel free to try it out.
+
+In this exercise we will implement the automatic mapping between Entities and Transfer Objects using _MapStruct_ framework.
+
+=== Configuration
+
+To use _MapStruct_ we need to add the dependency to the `pom.xml`. At the time of writing the most recent _MapStruct_ version is `1.5.5.Final`. The current version can be checked here: https://mapstruct.org/documentation/installation/.
+
+Please add the following dependency (I recommend defining the version as a Maven property):
+
+[source, xml]
+----
+    <properties>
+        <java.version>21</java.version>
+        <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
+    </properties>
+
+    ...
+
+    <dependency>
+        <groupId>org.mapstruct</groupId>
+        <artifactId>mapstruct</artifactId>
+        <version>${org.mapstruct.version}</version>
+    </dependency>
+----
+
+The Maven Compiler plugin needs to be configured to make sure that _MapStruct_ and _Lombok_ can work together. Please add the following `plugin` to the `build / plugins` section of `pom.xml`:
+
+You may also need to define the _Lombok_ version as a Maven property (similarly as we just did it for the _MapStruct_ version).
+
+[source, xml]
+----
+    <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+        <configuration>
+            <annotationProcessorPaths>
+                <path>
+                    <groupId>org.mapstruct</groupId>
+                    <artifactId>mapstruct-processor</artifactId>
+                    <version>${org.mapstruct.version}</version>
+                </path>
+                <path>
+                    <groupId>org.projectlombok</groupId>
+                    <artifactId>lombok</artifactId>
+                    <version>${lombok.version}</version>
+                </path>
+                <dependency>
+                    <groupId>org.projectlombok</groupId>
+                    <artifactId>lombok-mapstruct-binding</artifactId>
+                    <version>0.2.0</version>
+                </dependency>
+            </annotationProcessorPaths>
+            <compilerArgs>
+                <compilerArg>
+                    -Amapstruct.defaultComponentModel=spring
+                </compilerArg>
+            </compilerArgs>
+        </configuration>
+    </plugin>
+----
+
+=== Mappers
+
+_MapStruct_ is a code generator that simplifies the implementation of mappings between Java bean types based on a convention over configuration approach. To generate a mapper we will create a mapping interface annotated with `@Mapper`. By default, MapStruct will automatically map properties where the property name and types match. It will also map automatically if it can safely do an implicit type conversation.
+
+Here is the example of the Mapper for mapping between `PersonEntity` and `PersonEto`:
+
+[source,java]
+----
+@Mapper(componentModel = "spring")
+public interface PersonMapper {
+
+    PersonEto toPersonEto(PersonEntity personEntity);
+
+    PersonEntity toPersonEntity(PersonEto personEto);
+}
+----
+
+Please add the mappers for each Entity/Eto and put them into the following package:
+
+[source,java]
+----
+com.capgemini.training.todo.task.logic.mapper
+----
+
+_MapStruct_ will generate the implementation for us! Of course, we can customize the mappings, but in our case this will not be necessary. If You are interested, please check the example and the documentation here: https://mapstruct.org/.
+
+=== Bean mapping
+
+The mapper can be now injected into our Use Case implementations as any other Spring Component:
+
+[source,java]
+----
+@Service
+@Transactional
+public class ManagePersonUcImpl implements ManagePersonUc {
+
+    private final PersonRepository personRepository;
+    private final PersonMapper personMapper;
+
+    public ManagePersonUcImpl(PersonRepository personRepository, PersonMapper personMapper) {
+        this.personRepository = personRepository;
+        this.personMapper = personMapper;
+    }
+
+    @Override
+    public PersonEto savePerson(PersonEto personEto) {
+
+        PersonEntity personEntity = personMapper.toPersonEntity(personEto);
+        personEntity = personRepository.save(personEntity);
+        return personMapper.toPersonEto(personEntity);
+    }
+
+    // ...
+}
+----
+
+Please inject the mappers and use them for the Entity/Eto mappings. Then, remove all the methods needed for manual mapping from all the Use Case implementation.
+
+=== Tests
+
+You can add some tests for the mappers. However, the mapping should be already covered by the existing tests, so it is perfectly fine to just re-run the existing tests and check if the application still works as expected.
+
+=== link:task-service-services-layer.asciidoc[Next chapter: Task Service - Services Layer]

@@ -1,0 +1,9 @@
+= Introduction
+
+During the workshop we will implement a multi-layered server application for management of the TODO tasks.
+
+The users of this application should be able to create their task lists, add end edit the tasks, find the tasks based on name, completeness and/or deadline.
+
+We are going to start with defining the data model and implementing data access layer. Happy Coding!
+
+=== link:task-service-dataaccess-layer.asciidoc[Next chapter: Task Service - Data Access Layer]
