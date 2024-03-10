@@ -227,183 +227,367 @@ Run the application and check if database schema maps correctly into entities mo
 === Repositories
 
 To perform operations on our entities we need to create repositories for each of them. They will contain operations specific for each of the objects.
+Repositories used in Spring are already defined as Interface called Repository. There are multiple extentions of this interface and we will use JpaRepository<ENTITY, ID>.
 
-==== ItemRepository
+==== TaskListRepository
 
-In component order-service-core, create package com.devonfw.app.java.order.orderservice.dataaccess.api.repo. We will place there all our repositories.
+In the component task, create package dataaccess.repository. We will place there all our repositories.
 
-Create interface _ItemRepository_. It should extend _DefaultRepository_ from JPA which contains generic operations for entities.
+Create interface _TaskListRepository_. It should extend _JpaRepository_ from Spring which contains all basic operations along with methods used in sorting and paging of results. This Interface is generic.
 [source,java]
 ----
-public interface ItemRepository extends DefaultRepository<ItemEntity> {
+public interface TaskListRepository extends JpaRepository<TaskListEntity, Long> {
+    //Add Imports and that's it
+}
 ----
 
-==== ItemRepositoryTest
+==== TaskListRepositoryTest
 
 With such repository we can already perform basic CRUD operations, f.e. save, deleteById, findById.
 
-We will test the behaviour of Repository methods using unit tests.
+We can test the behaviour of Repository methods using unit tests. Remember that we do not test the framework itself but our usage of it. Still writing test for simple CRUD operations is usually not needed. We will write some simple tests nevertheless, just to understand the structure and behaviour of repository tests using @DataJpaTest
 
-In source folder src/test/java of component order-service-core create same package as for interface.
-
-Create there class _ItemRepositoryTest_
+In source folder src/test/java of project create same package as for interface.
+Alternatively, you can use IDE to generate test in corresponding package but in srt/test/java folder.
+This will enable you to test this class package protected (default visibility) methods.
+Create the class _TaskListRepositoryTest_. Remember to add imports.
 [source,java]
 ----
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 
-@SpringBootTest( webEnvironment = WebEnvironment.DEFINED_PORT)
-public class ItemRepositoryTest extends ComponentTest {
+@DataJpaTest
+public class TaskListRepositoryTest  {}
 ----
 
-DEFINED_PORT is used to connect to H2 console always on the specified port.
-We need to adjust application.properties of src/test/resources/config.
-
-- Enable there h2 console
-- Adjust spring.datasource.url to be same as for our application
-- Define server.port as different than for application.
-- Look at spring.flyway.locations. It calls migration of data for each of test runs. We leave it for now to start with the filled database.
-
-[source]
-----
-server.port=8085
-spring.h2.console.enabled=true
-----
-
-Functionality of ComponentTest will be described later.
+@DataJpaTest creates us a simplified Spring Test configuration with loaded Entities and repositories.
+All of the tests on @DataJpaTest will be launched on preconfigured H2 Database, so there's no configuration needed.
+Remember, that by default all @Test methods in a @DataJpaTest annotated test class will be automatically rolled back and not commited.
+This actually may cause some of your database-specific constraints to not be actually checked, only your Entity annotations
+- and that's a plus, because the tests are much faster, and you should add constraints to BOTH db and Entities.
+Just like you should do frontend AND backend validation.
 
 ===== FindAll test
 
-Let's write our first test - we would like to find all items. We will use for it JpaRepository.findAll() method which is available in _ItemRepository_ thanks to inheritance of DefaultRepository.
+Let's write our first test - we would like to find all entities.
+We will use for it findAll() method which is available in _TaskListRepository_ thanks to inheritance of _JpaRepository_.
+Spring then creates a proxy classes of all Interfaces extending the Spring repositories, because Spring is still java,
+and you cannot have instances of interfaces.
 
-- inject _ItemRepository_ to test class.
+- inject _TaskListRepository_ to test class.
 - prepare public method annotated with _@Test_
-- call there _ItemRepository.findAll()_ method
+- call there _taskListRepository.findAll()_ method
 - check that number of found elements is same as number of elements created in your migration.
+- imports
 
 [source,java]
 ----
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+@DataJpaTest
+public class TaskListRepositoryTest {
 
-@SpringBootTest( webEnvironment = WebEnvironment.DEFINED_PORT)
-public class ItemRepositoryTest extends ComponentTest {
+    @Autowired
+    private TaskListRepository taskListRepository; //some IDE's wrongfully mark this var as unused
 
-  @Inject
-  private ItemRepository itemRepository;
+    @Test
+    void testFindAll() {
+        //given when
+        List<TaskListEntity> result = taskListRepository.findAll();
 
-  @Test
-  public void shouldFindAllItems() {
-    // when
-    List<ItemEntity> foundItems = itemRepository.findAll();
+        //then
+        assertThat(result).isNotEmpty();
+        assertThat(result).hasSize(3);
+        // Notice, that the number of objects are equal to entities inserted by mockdata script launched by flyway.
+        // We could also define separate test/resources migration scripts, but we won't do that!
+        // (let's spare the time, you can google it if you want)
+    }
+}
 
-    // then
-    assertThat(foundItems).hasSize(1);
-  }
 ----
 
-Run test
+To run the tests, right click and select run tests.
 
-image::images/devon4j/6.Dataaccess/run_junit.png[width="700", link="images/devon4j/6.Dataaccess/run_junit.png"]
-
-To check that items from migrations are really in the tested database, create a breakpoint in the test. It will pause the
-
-Congratulations, you wrote your first unit test!
-
-==== JPAQuery
-
-QueryDSL allows us to write query which can be suitable for many use cases.
-
-Create search criteria object which will contain all arguments used in this query. Place it on order-service-api in package com.devonfw.app.java.order.orderservice.logic.api.to
-_ItemSearchCriteriaTo_ has to contain all business attributes of _ItemEntity_.
-Additionally we add there _StringSearchConfigTo_ for each of the string attributes to be able to create also LIKE expressions.
+You should also see some hibernate queries, they may be difficult to read but its there.
 
 [source,java]
 ----
-import org.springframework.data.domain.Pageable;
-
-public class ItemSearchCriteriaTo extends AbstractTo {
-
-  private String name;
-  private String description;
-  private Double price;
-  private StringSearchConfigTo nameOption;
-  private StringSearchConfigTo descriptionOption;
-  private Pageable pageable;
+Hibernate: select tle1_0.id,tle1_0.name,tle1_0.version from task_list tle1_0
 ----
 
-Implement getters and setters for all attributes.
+You can also use the mvn command:
+[source,bash]
+----
+mvn test
+----
 
-Go back to the _ItemRepository_. Implement there findByCriteria method using JPAQuery.
+Wonderful job! You've created your first Test using Spring Repositories and _@DataJpaTest_.
+You may have also heard of _@SpringBootTest_. You can try and switch it up to see the difference.
+_@SpringBootTest_'s are slower, but also allow you to test web communication and they search for
+_@SpringBootConfiguration_ when required, allowing you to overwrite configuration for testing purposes.
+
+
+Regardless JPA Testing, those annotations seem same at first, but it's much easier to connect yourself to an other database,
+be it in local or in remote test environment and check if your database constraints etc. are working,
+if your triggers, scripts or whatever else is working as intended too.
+These tests use I/O intensively, so they are PAINFULLY slow and you need to maintain data stability between tests,
+so developers need to implement proper measures. On top of that, we can throw parallel test launches out of the window.
+Still, some projects use or require this approach, so it's worth noting.
+
+
+=== Querying the Database
+
+Spring Data Allows us to use a multitude of basic queries, but what if we want something customised?
+Due to the age (Java developers prefer word "Maturity") of the language and JPA itself, multitude of different libraries,
+Domain Specific Languages, frameworks etc were introduced, to aid us or to make our lives more difficult.
+
+In the end, it doesn't even matter - it's all always mapped to JPQL Query String, and called through entityManager, the core of JPA.
+If you will debug deep enough, you will find it (try it if you're bored).
+How you will use the JPA is usually decided by an architect or the developers themselves.
+
+=== First Task
+
+Implement those 2 queries and test them. Before you dive into the code, you may want to look at examples in paragraph below.
+
+1) Find all TaskLists with partially given name, ignoring upper and lowercase
+
+2) Find all TaskItems by completion and deadline
+- essentially we want to find and which are not completed and with exceeded deadline
+
+
+=== Various Query Methods
+
+Courtesy of Spring: https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html
+
+Example's of queries in given forms with explanation:
+
+==== Spring Query Methods
+
+Spring Query Methods is a mechanism used solely by Spring.
+It can match the method name with corresponding table, due to Generic Type,
+and add simple clauses just by interpreting the name of the methods. It will cause wierd exceptions if this cannot be parsed, so be advised!
+
+
+In the _TaskListRepository_ interface type:
 [source,java]
 ----
-import static com.querydsl.core.alias.Alias.$
+List<TaskListEntity> findAllByName(String name);
+----
+That's it.
 
-default Page<ItemEntity> findByCriteria(ItemSearchCriteriaTo criteria) {
+==== Spring @Query Annotation
 
-  ItemEntity alias = newDslAlias();
-  JPAQuery<ItemEntity> query = newDslQuery(alias);
+==== Named Query + Named Method
 
-  String name = criteria.getName();
-  if (name != null && !name.isEmpty()) {
-    QueryUtil.get().whereString(query, $(alias.getName()), name, criteria.getNameOption());
-  }
+=== Custom Queries
 
-  // TODO: implement also expression for description and price
+To implement custom queries we need to have access to the EntityManager.
+The easiest way is to write default methods and using the entityManager as parameter.
+This breaks SOLID but is definitely quicker if you just want to test something out.
 
-  // TODO: implement also sorting using addOrderBy
+The proper way to use the entityManager without receiving it as a param, is to implement a customRepo and extending your main repo with it,
+thus keeping our SOLID rules in check and having a way to implement methods manually.
 
-  // TODO: return found items using QueryUtil
+In the same package, create a _CustomTaskItemRepository_. It will contain method signatures for your JpaRepository.
+
+[source,java]
+----
+public interface CustomTaskItemRepository {
+List<TaskItemEntity> findByCriteria(TaskItemCriteria searchCriteria);
 }
 ----
 
-Test the solution you created.
-
-===== Hints
+Create a custom implementation of your Custom repository. Here Spring does some interpreting, so to avoid exceptions all of the interfaces and classes should be in same package and have corresponding name.
+Class implementing the custom repository has to have a name ending with Impl - _CustomTaskItemRepositoryImpl_.
+Write your own implementation there
 
 [source,java]
 ----
-Sort sort = Sort.by("name");
-Pageable pageable = PageRequest.of(0, 20, sort);
-----
+public class CustomTaskItemRepositoryImpl implements CustomTaskItemRepository{
 
-==== Repositories with CobiGen
+    @PersistenceContext
+    private EntityManager entityManager;
 
-For OrderEntity and CustomerEntity we will generate SeachCriteria and Repositories using CobiGen.
-Right click on each of the entities, generate with CobiGen. Mark there TO's ans SpringRepository.
-Click Customize (right down corner of objects generated) and untick TO object (CustomerTo).
-
-image::images/devon4j/6.Dataaccess/generaterepo.PNG[width="700", link="images/devon4j/6.Dataaccess/generaterepo.PNG"]
-
-Compare generated repositories to your own.
-
-==== Business functionality
-
-Implement given queries together with unit tests.
-
-- Find item entities where name is like given argument (case insensitive). Sort result by name ascending - use search criteria query.
-- Find orders from given day with specific status - create SpringData query.
-- Remove Customer by id.
-- Create Order with two order positions and owner set.
-- Update item with given name changing it's price.
-
-===== Remark
-
-During testing ItemEntity we used our migration to create testdata. Instead of it, we should create testdata for each unit test separately to have them independent.
-To do so, after each of the tests, we will clear database schema using _doTearDown()_ method.
-[source,java]
-----
-@Override
-protected void doTearDown() {
-  super.doTearDown();
-  // TODO: call here delete for all entities related to this test class
-  this.itemRepository.deleteAll();
+	@Override
+	public List<TaskItemEntity> findByCriteria(TaskItemCriteria searchCriteria) {
+		// implementation
+    }
 }
 ----
 
-We won't load data from our migration file. Please adjust application.properties file from test directory and remove there migration location from flyway locations.
+Now extend your own interface repository with BOTH _JpaRepository_ and _CustomTaskItemRepository_.
+Your _TaskItemRepository_ will now understand that it has those custom methods already implemented.
 
-[source,properties]
+[source,java]
 ----
-spring.flyway.locations=classpath:db/type/h2
+public interface TaskItemRepository extends JpaRepository<TaskItemEntity, Long>, CustomTaskItemRepository {
+    //nothing! it just works
+}
 ----
+
+==== Criteria Api
+
+As personal opinion of author(ppodolsk): I abhor this abomination. It allows you to build somewhat customized,
+more complex queries, but the amount of boilerplate code is obnoxious. The boilerplate code will require
+two different "creator" classes to be instantiated and mixed with each other.
+In the end the dev is forced to either build a horrific chain of subclasses to generalise some of the code,
+or, typically, copy-paste like the client would pay them for LoC.
+
+Here's a working sample, you can copy-paste in most of projects using Criteria API and you're golden.
+
+In the _TaskItemRepository_ interface type:
+[source,java]
+----
+default List<TaskItemEntity> findByCriteria(TaskItemCriteria searchCriteria, EntityManager entityManager) {
+        Objects.requireNonNull(searchCriteria, "Invalid input: searchCriteria - cannot be null!");
+
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder(); // initialize criteria builder, to build queries
+        CriteriaQuery<TaskItemEntity> criteriaQuery = builder.createQuery(TaskItemEntity.class); // initialize Query structure
+        Root<TaskItemEntity> root = criteriaQuery.from(TaskItemEntity.class); //Initialise "select from"
+        List<Predicate> predicateList = new ArrayList<>();
+
+        if (searchCriteria.taskItemName() != null) {
+            predicateList.add(builder.like(root.get("name"), searchCriteria.taskItemName()));
+        }
+
+        if (searchCriteria.taskListName() != null) {
+            Join<TaskItemEntity, TaskListEntity> joinedList = root.join("taskList", JoinType.INNER);
+            predicateList.add(builder.like(joinedList.get("name"), searchCriteria.taskListName()));
+        }
+
+        Predicate[] predicateArray = predicateList.toArray(new Predicate[0]);
+        criteriaQuery.where(predicateArray); //API made for lists does not like lists
+        TypedQuery<TaskItemEntity> query = entityManager.createQuery(criteriaQuery);
+        return query.getResultList();
+    }
+----
+Oof.
+
+==== Query DSL
+
+Criteria Api long lost step-brother. Everyone likes him more, he's cool. So what that (in older versions, don't know for sure now)
+he will occasionally cut parts of your query WHERE clauses and won't add them to the query String, potentially causing catastrophic reads.
+Imagine if that bad read would go to some batch processing.
+
+Still, those errors are not that often, and the API is so nice and easy, that we forgive him.
+
+To use QueryDSL along with its supportive QClasses we need to do the following:
+
+Add these 2 dependencies to the pom.xml in the _<dependencies>_ block;
+[source,xml]
+----
+		<dependency>
+			<groupId>com.querydsl</groupId>
+			<artifactId>querydsl-apt</artifactId>
+			<version>5.0.0</version>
+			<classifier>jakarta</classifier>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.querydsl</groupId>
+			<artifactId>querydsl-jpa</artifactId>
+			<classifier>jakarta</classifier>
+			<version>5.0.0</version>
+		</dependency>
+----
+
+
+Add this plugin in the _<plugins>_ block;
+
+[source,xml]
+----
+<plugin>
+    <groupId>com.mysema.maven</groupId>
+	<artifactId>apt-maven-plugin</artifactId>
+	<version>1.1.3</version>
+	<executions>
+		<execution>
+			<goals>
+				<goal>process</goal>
+			</goals>
+			<configuration>
+				<outputDirectory>target/generated-sources/java</outputDirectory>
+				<processor>com.mysema.query.apt.jpa.JPAAnnotationProcessor</processor>
+			</configuration>
+		</execution>
+	</executions>
+</plugin>
+----
+
+Clean install the project.
+In target.generated-sources/annotations there should be
+_QPersonEntity_, _QTaskItemEntity_, _QTaskListEntity_ classes.
+
+QueryDSL allows us to write us easy queries. In _PersonRepository_ we can add the method
+
+[source,java]
+----
+@Repository
+public interface PersonRepository extends JpaRepository<PersonEntity, Long> {
+
+    default List<PersonEntity> findCustomByEmailWithTaskListName(String email, String taskListName, EntityManager entityManager) {
+
+        QPersonEntity person = QPersonEntity.personEntity;
+        QTaskListEntity taskList = QPersonEntity.personEntity.taskList;
+        JPAQueryFactory jpaQueryFactory = new JPAQueryFactory(entityManager);
+
+        return jpaQueryFactory.select(person).from(person)
+                .innerJoin(taskList)
+                .where(person.email.eq(email)
+                        .and(taskList.name.like(taskListName)))
+                .orderBy(person.email.desc(), taskList.name.asc())
+                .fetch();
+    }
+}
+----
+
+And then simply test it:
+
+[source,java]
+----
+@DataJpaTest
+class PersonRepositoryTest {
+
+    @Autowired
+    private PersonRepository personRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    @Test
+    void testFindByQueryDSL(){
+        // given when
+        List<PersonEntity> result = personRepository.findCustomByEmailWithTaskListName(
+                "ba@capgemini.com", "Business Analysis Tasks", entityManager);
+        // then
+        assertThat(result).isNotEmpty();
+        assertThat(result).hasSize(1);
+    }
+}
+----
+
+=== Task 2:
+
+Implement these queries:
+
+1) Find person using email - use Spring Query Method
+2) Find TaskItems with deadline between - use @Query
+3) Find TaskList without any items - use NamedQuery and bind it to interface method
+4) Find all TaskLists with more than 1 item - use QueryDSL - this one may be tricky
+
+
+Remember to test your queries!
+
+===== Hints and Troubleshooting
+
+During your implementation you may encounter multiple vague exceptions.
+JPA Exceptions look sometimes like they are wrapped or hidden, so careful consolelog analysis is required.
+However, the are some exceptions that are more common than others:
+
+[source, bash]
+----
+IllegalStateException: Failed to load ApplicationContext
+----
+This happens usually if the query you have created has errors and does not compile.
+This is because queries are checked in runtime during startup (not compile-time) - that's why your code compiles,
+but the test or app does not run.
+
+
 
 === link:order-service-logic-layer.asciidoc[Next chapter: Order Service - Business Logic Layer]
