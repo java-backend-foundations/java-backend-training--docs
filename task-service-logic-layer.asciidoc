@@ -4,7 +4,7 @@
 
 In this chapter we are going to create business logic layer for already implemented database queries. We are going to prepare UseCases together with Transfer Objects and corresponding tests.
 
-The chapter contains 4 exercises -- the first two are essential, third and forth exercise are optional and they done in any order.
+The chapter contains 4 exercises -- the first two are essential, third and forth exercise are optional, and they can be done in any order.
 
 toc::[]
 
@@ -220,6 +220,8 @@ Please add `TaskListCto` on Your own.
 
 NOTE: It may be more convenient to implement the missing logic incrementally -- by adding the new method to the interface, implementing and testing it (instead of adapting all interfaces at once and implementing all of them afterwards).
 
+NOTE: You can implement the missing logic in any order You would like, please try to implement as much logic as You can.
+
 We can now extend the Use Case interfaces and add the missing logic:
 
 - Extend `ManagePersonUc` by adding the following method:
@@ -233,8 +235,8 @@ PersonCto savePerson(PersonCto personCto);
 
 [source,java]
 ----
-PersonCto savePerson(PersonCto personCto);
-void deletePerson(Long id);
+TaskListCto saveTaskList(TaskListCto taskListCto);
+void deleteTaskList(Long id);
 ----
 
 - Create `FindTaskListUc` interface with the following methods:
@@ -300,7 +302,7 @@ public record PersonEto (Long id,
                          @NotEmpty @Email String email) { }
 ----
 
-You can similarly annotate other fields in ETOs. For example, please make sure that the name of the `TaskList` contains at least 5 characters and the name of the `TaskItem` contains from 2 to 20 characters. Please check this for further reference or help: https://hibernate.org/validator/.
+You can similarly annotate other fields in ETOs. For example, please make sure that the name of the `TaskList` contains at least 5 characters and the name of the `TaskItem` contains from 2 to 40 characters. Please check this for further reference or help: https://hibernate.org/validator/.
 
 === Constraint validation
 
@@ -353,7 +355,7 @@ In this exercise we will implement the automatic mapping between Entities and Tr
 
 To use _MapStruct_ we need to add the dependency to the `pom.xml`. At the time of writing the most recent _MapStruct_ version is `1.5.5.Final`. The current version can be checked here: https://mapstruct.org/documentation/installation/.
 
-Please add the following dependency (I recommend defining the version as a Maven property):
+Please add the following dependencies (I recommend defining the version as a Maven property):
 
 [source, xml]
 ----
@@ -369,44 +371,14 @@ Please add the following dependency (I recommend defining the version as a Maven
         <artifactId>mapstruct</artifactId>
         <version>${org.mapstruct.version}</version>
     </dependency>
+    <dependency>
+        <groupId>org.mapstruct</groupId>
+        <artifactId>mapstruct-processor</artifactId>
+        <version>${org.mapstruct.version}</version>
+        <scope>provided</scope>
+    </dependency>
 ----
 
-The Maven Compiler plugin needs to be configured to make sure that _MapStruct_ and _Lombok_ can work together. Please add the following `plugin` to the `build / plugins` section of `pom.xml`:
-
-You may also need to define the _Lombok_ version as a Maven property (similarly as we just did it for the _MapStruct_ version).
-
-[source, xml]
-----
-    <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.1</version>
-        <configuration>
-            <annotationProcessorPaths>
-                <path>
-                    <groupId>org.mapstruct</groupId>
-                    <artifactId>mapstruct-processor</artifactId>
-                    <version>${org.mapstruct.version}</version>
-                </path>
-                <path>
-                    <groupId>org.projectlombok</groupId>
-                    <artifactId>lombok</artifactId>
-                    <version>${lombok.version}</version>
-                </path>
-                <dependency>
-                    <groupId>org.projectlombok</groupId>
-                    <artifactId>lombok-mapstruct-binding</artifactId>
-                    <version>0.2.0</version>
-                </dependency>
-            </annotationProcessorPaths>
-            <compilerArgs>
-                <compilerArg>
-                    -Amapstruct.defaultComponentModel=spring
-                </compilerArg>
-            </compilerArgs>
-        </configuration>
-    </plugin>
-----
 
 === Mappers
 
