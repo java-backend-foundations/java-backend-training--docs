@@ -369,7 +369,37 @@ That's it.
 
 ==== Spring @Query Annotation
 
+Directly in the inteface create a new method with a @Query annotation and JQPL query inside.
+@Param annotation is used to map the java var name of query variable
+
+[source,java]
+----
+@Query("SELECT item FROM TaskItemEntity item WHERE item.deadline < :deadline")
+    List<TaskItemEntity> findByDeadlineBefore(@Param("deadline") Instant deadline);
+
+----
+
 ==== Named Query + Named Method
+
+We can predefine a NamedQuery in the Entity class as a query with a given name and query string.
+You can use parameters there, but to use Spring mechanisms,
+the name of the query needs to start with the name of the entity.
+
+[source,java]
+----
+@NamedQuery(name = "TaskListEntity.findUsingNamedQuery",
+        query = "select task from TaskListEntity task where name =:name")
+----
+
+
+Then you can create a method in interface with same name:
+
+[source,java]
+----
+List<TaskListEntity> findUsingNamedQuery(String name);
+----
+
+If the name will match, then you will be able to run the named query from interface.
 
 === Custom Queries
 
