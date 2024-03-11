@@ -220,8 +220,6 @@ private List<TaskItemEntity> items;
 You are ready to go!
 Run the application and check if database schema maps correctly into entities model.
 
-[.red>>TODO fix the description from here on<<#
-
 === Repositories
 
 To perform operations on our entities we need to create repositories for each of them. They will contain operations specific for each of the objects.
