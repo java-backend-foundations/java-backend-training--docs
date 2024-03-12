@@ -4,3 +4,169 @@
 
 toc::[]
 
+In this chapter we are going to create service layer which exposes backend functionality.
+
+== Implement the `PersonService`
+
+Your first task is to implement a simple `PersonService`. This service will manage basic CRUD operations for a `Person` entity. After implementing the service, you will write test cases to verify the service's functionality.
+
+=== Implementation
+
+- Create a package named `com.capgemini.training.todo.task.service`.
+- Within this package, create a class named `PersonService`.
+- Use annotations like `@RestController`, `@RequestMapping`, `@GetMapping`, `@PostMapping`, and `@DeleteMapping` to define your RESTful service.
+- Map the service to the `/person` path, so it will be availablu under `http://localhost:8080/person/`
++
+--
+[source,java]
+----
+@RestController
+@RequestMapping("person")
+@RequiredArgsConstructor
+public class PersonService {
+    
+    // Your code here
+
+}
+----
+--
+- Implement CRUD operations to list, get, create and delete a `Person` using the use cases implemented in the business logic layer.
+- Use annotations like `@PathVariable` to map the path variable to the method parameter.
+- Use annotation `@RequestBody` to define the parameters representing the request parameters (e.g. for the `POST` method)
++
+--
+[source,java]
+----
+final FindPersonUc findPersonUc;
+final ManagePersonUc managePersonUc;
+
+@GetMapping("/{id}")
+PersonEto findPerson(@PathVariable("id") @NotNull Long id) {
+    return findPersonUc.findPerson(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "Person with id " + id + " does not exist."));
+}
+
+    // TODO annotate
+List<PersonEto> findAllPersons() {
+    // TODO Implement me!
+    return null;
+}
+
+// TODO annotate
+PersonEto savePerson(PersonEto personEto) {
+    // TODO Implement me!
+    return null;
+}
+
+// TODO annotate
+void deletePerson(@NotNull Long id) {
+    // TODO Implement me!
+    return null;
+}
+----
+--
+
+=== Testing with _Postman_
+
+The service method implemented by `findPerson` can be accessed under following url using `GET` request:
+
+[source,java]
+----
+http://localhost:8080/person/{id}
+----
+
+Test the implemented services using _Postman_ (or your favourite testing tool)
+
+image::images/services/postman-test-get.png[]
+
+The other methods can be tested in the similar way
+
+image::images/services/postman-test-post.png[]
+
+=== Writing test cases
+
+- Annotate the test class using `@WebMvcTest`. It will define a Spring MVC test that focuses only on Spring MVC components.
+- Use `MockMvc` to simulate HTTP requests. Use the factory methods (like `get`, `post`, `status`) from `MockMvcResultMatchers`
+- Use Mockito to mock the service dependencies from the logic layer.
+- Use `@MockBean` to inject the mocked dependencies.
+- Below is an example of how to test the `findAllPersons` method:
++
+--
+[source,java]
+----
+@WebMvcTest(PersonService.class)
+public class PersonServiceTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockBean
+    private FindPersonUc findPersonUc;
+
+    @Test
+    public void findPerson_ShouldReturnPerson() throws Exception {
+        Long personId = 1L;
+        PersonEto person =
+                PersonEto.builder().id(personId).version(1).email("test@example.com").build();
+        given(findPersonUc.findPerson(personId)).willReturn(Optional.of(person));
+
+        mockMvc.perform(get("/person/{id}", personId).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(person.id()))
+                .andExpect(jsonPath("$.email").value(person.email()));
+    }
+
+    // Here other tests
+}
+----
+--
+- Write test cases for each CRUD operation you have implemented in the `PersonService`
+
+== Implement and Test the `TaskItemService` and `TaskListService`
+
+After you have successfully completed the `PersonService`, proceed to implement `TaskItemService` and `TaskListService` with their respective test cases using the use cases you have implemented in the logic layer.
+
+Follow the same steps as in the previous service for both `TaskItemService` and `TaskListService`. Ensure you implement CRUD operations and write corresponding test cases for each method.
+
+== Enable validation (optional)
+
+Usually the validation of the parameters should be performed on the service layer to prevent requests which are not valid. 
+
+In this task you can add input validation to your services. Utilize annotations like `@Validated` in your service class and `@Valid` and `@NotNull` in your service methods to enforce constraints on incoming data.
+
+Please follow _Bean validation using Hibernate Validator_ in link:task-service-logic-layer.asciidoc[Task Service - Business Logic Layer] for more details. 
+
+== Additional Tips
+
+=== Creating JSON Strings from Java Classes
+
+When writing your test cases, you might need to send JSON payloads. Use Jackson's `ObjectMapper` to serialize Java objects into JSON strings:
+
+[source,java]
+----
+ObjectMapper objectMapper = new ObjectMapper();
+PersonEto newPerson = PersonEto.builder().id(null).version(0).email("test@example.com").build();
+String newPersonJson = objectMapper.writeValueAsString(newPerson);
+
+mockMvc.perform(
+        post("/person/").contentType(MediaType.APPLICATION_JSON).content(newPersonJson))
+        .andExpect(...)
+        ...
+    )
+----
+
+=== Handling Java 8 Date/Time Serialization
+
+If you encounter `InvalidDefinitionException` with Java 8 date/time types, like `java.time.Instant`, you can fix this by registering the `JavaTimeModule` with your `ObjectMapper`:
+
+[source,java]
+----
+ObjectMapper objectMapper = new ObjectMapper();
+objectMapper.registerModule(new JavaTimeModule());
+----
+
+This allows your `ObjectMapper` to correctly serialize and deserialize Java 8 date/time types.
+
+
+link:task-service-security.asciidoc[Next chapter: Task Service - Security]
