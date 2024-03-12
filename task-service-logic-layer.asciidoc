@@ -23,7 +23,7 @@ The Transfer Objects should be located in the following package:
 com.capgemini.training.todo.task.common
 ----
 
-Entity Transfer Objects will contain the same properties as the corresponding entity, but they *should not* include any relations or the `version` attribute. You may use _Lombok_ to reduce the number of the boilerplate code. For instance, for `PersonEntity` the corresponding `PersonEto` should look as follows:
+Entity Transfer Objects will contain the same properties as the corresponding entity, but they *should not* include any relations. You may use _Lombok_ to reduce the number of the boilerplate code. For instance, for `PersonEntity` the corresponding `PersonEto` should look as follows:
 
 [source,java]
 ----
@@ -31,6 +31,7 @@ Entity Transfer Objects will contain the same properties as the corresponding en
 @Builder
 public class PersonEto  {
     private final Long id;
+    private final int version;
     private final String email;
 }
 ----
@@ -43,6 +44,7 @@ It is considered to be a good practice to make Transfer Objects immutable (as in
 ----
 @Builder
 public record PersonEto (Long id,
+                         int version,
                          String email) { }
 ----
 
@@ -122,7 +124,7 @@ public class ManagePersonUcImpl implements ManagePersonUc {
     public PersonEto savePerson(PersonEto personEto) {
 
         PersonEntity personEntity = toPersonEntity(personEto);
-        personEntity = personRepository.save(personEntity);
+        personEntity = personRepository.saveAndFlush(personEntity);
         return toPersonEto(personEntity);
     }
 
@@ -287,6 +289,7 @@ _Hibernate Validator_ offers validation annotations that can be applied to the d
 @Builder
 public class PersonEto  {
     private final Long id;
+    private final int version;
     @NotEmpty
     @Email
     private final String email;
@@ -299,6 +302,7 @@ or if You created a record instead:
 ----
 @Builder
 public record PersonEto (Long id,
+                         int version,
                          @NotEmpty @Email String email) { }
 ----
 
