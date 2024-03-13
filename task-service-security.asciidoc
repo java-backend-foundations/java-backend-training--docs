@@ -26,12 +26,21 @@ Upon executing the application, accessing any endpoint should prompt the login s
 
 * Develop a configuration class named `SecurityConfiguration`. This class will house beans utilized during authentication and authorization.
 * Define a bean named `SecurityFilterChain` with the following specifications:
-** It should not be invoked for the address */h2-console*.
-** Allow anonymous access to the endpoint */user*.
+** Allow anonymous access to the endpoints */user* adn */h2-console/***.
 ** Mandate authentication for all other endpoints.
-** Display an auto-generated user page under the endpoint */signin*.
-** Log out when the address */goodbye* is invoked.
+** Display an auto-generated user page when not authenticated*.
+** Logout endpoint exists.
 ** Additionally enable Basic Authentication to facilitate testing endpoints easily with Postman.
+** Disable CSRF and configure frame options to be able to use h2-console
+
+[source,java]
+----
+                .csrf(customizer -> customizer
+                        .ignoringRequestMatchers("/h2-console/**"))
+                .headers(customizer -> customizer
+                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
+----
+
 * Establish a bean named `UserDetailsService` with the following features:
 ** Operates in memory.
 ** Configures test users with selected usernames and passwords.
@@ -43,7 +52,7 @@ Upon executing the application, accessing any endpoint should prompt the login s
 public class SecurityConfiguration {
     
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         // Implement this
     }
     
@@ -56,7 +65,10 @@ public class SecurityConfiguration {
 
 == Authentication Configuration
 
+At the beginning add annotation *@EnableMethodSecurity* to security configuration class.
+
 Please configure the following users:
+
 * admin - with the role *ADMIN*.
 * maintainer - with the role *MAINTAINER*.
 * creator - with the role *CREATOR*.
@@ -68,6 +80,30 @@ Now, you are prepared to safeguard your business logic. Grant access to specific
 * *MAINTAINER* can list users and delete task lists.
 * *CREATOR* can create and modify task lists and tasks.
 * Users without any assigned role are permitted to read tasks and task lists.
+
+You can define static fields and use them in annotations like
+
+[source,java]
+----
+@Component("R")
+public class AccessControl {
+
+    public static String ROLE_ADMIN = "ADMIN";
+    public static String ROLE_MAINTAINER = "MAINTAINER";
+
+    // Implement
+}
+----
+
+[source,java]
+----
+    @Override
+    @PreAuthorize("hasRole(@R.ROLE_ADMIN)")
+    public void deletePerson(@NotNull Long id) {
+
+        personRepository.deleteById(id);
+    }
+----
 
 Please verify the correctness of these configurations.
 
