@@ -2,5 +2,95 @@
 
 = Task Service - Security
 
+This chapter focuses on the security measures for our application, emphasizing authentication and the protection of our business logic based on user roles.
+
 toc::[]
 
+== Incorporating Necessary Dependency into Our Application
+
+To utilize Spring Security, it's imperative to integrate its security module into our application. This can be achieved by adding the following XML configuration to the `pom.xml` file:
+
+[source,xml]
+----
+<dependency>
+  <groupId>org.springframework.boot</groupId>
+  <artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+----
+
+Upon executing the application, accessing any endpoint should prompt the login screen. Additionally, a default user with the username *user* and a generated password can be found in the console. It's important to refresh the Maven model structure if any issues arise.
+
+== Configuring Authentication
+
+=== Creating a Security Configuration File and Basic SecurityFilterChain
+
+* Develop a configuration class named `SecurityConfiguration`. This class will house beans utilized during authentication and authorization.
+* Define a bean named `SecurityFilterChain` with the following specifications:
+** It should not be invoked for the address */h2-console*.
+** Allow anonymous access to the endpoint */user*.
+** Mandate authentication for all other endpoints.
+** Display an auto-generated user page under the endpoint */signin*.
+** Log out when the address */goodbye* is invoked.
+** Additionally enable Basic Authentication to facilitate testing endpoints easily with Postman.
+* Establish a bean named `UserDetailsService` with the following features:
+** Operates in memory.
+** Configures test users with selected usernames and passwords.
+* Validate if the specified configurations function as intended.
+
+[source,java]
+----
+@Configuration
+public class SecurityConfiguration {
+    
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) {
+        // Implement this
+    }
+    
+    @Bean
+    public UserDetailsService userDetailsService() {
+        // Implement this
+    }
+}
+----
+
+== Authentication Configuration
+
+Please configure the following users:
+* admin - with the role *ADMIN*.
+* maintainer - with the role *MAINTAINER*.
+* creator - with the role *CREATOR*.
+* user - without any role.
+
+Now, you are prepared to safeguard your business logic. Grant access to specific user groups by employing the appropriate `@PreAuthorize` annotation with the requisite permissions in your use case classes.
+
+* *ADMIN* can create and remove users.
+* *MAINTAINER* can list users and delete task lists.
+* *CREATOR* can create and modify task lists and tasks.
+* Users without any assigned role are permitted to read tasks and task lists.
+
+Please verify the correctness of these configurations.
+
+== Optional Exercises (order is not relevant)
+
+=== Storing Users in a Database
+
+Up to this point, all user data has been stored in memory. Now, attempt to utilize a database to store user information. Adjust relevant components to retrieve data from the database during authentication.
+* Create an appropriate migration script to add users and roles (This step may be skipped if opting for the default Spring database schema).
+* Replace the current `UserDetailsService` with one that interfaces with the database, such as *JdbcUserDetailsManager*.
+* Ensure that after adding a new user to the database, logging in with the new credentials is possible.
+
+=== Utilizing Current User Context
+
+* Introduce a new endpoint to create a Person with a TaskList.
+* Instead of relying on user-provided data, utilize the currently logged-in user for person details.
+* For simplicity, assume that emails follow the format: `[username]@example.com`.
+
+=== Implementing Fine-Grained Authorization
+
+* Define more granular authorities to safeguard business logic. For example:
+** CREATE_USER
+** DELETE_USER
+** ...
+* Adjust the authorization of business logic to incorporate these new authorities.
+* Establish a mapping of ROLE -> LIST_OF_AUTHORITIES. Develop a mechanism that, during authentication, resolves user roles and adds all corresponding authorities to the user.
