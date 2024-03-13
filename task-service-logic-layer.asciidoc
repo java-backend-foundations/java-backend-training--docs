@@ -149,7 +149,9 @@ Please implement all the Use Cases.
 
 === Tests
 
-In this part we’ll try to create spring-boot context aware test classes that will check our business logic implementation. For that we’ll create a test class that will be started without web environment context:
+In this part we’ll test the business logic layer of our _Spring Boot_ application.
+
+We can create spring-boot context aware test classes that will check our business logic implementation. For that we’ll create a test class that will be started without web environment context:
 
 [source,java]
 ----
@@ -172,6 +174,40 @@ class ManagePersonUcTest {
     @Test
     public void deletePerson() {
         // ...
+    }
+}
+----
+
+In our case, the above integration tests will be relatively fast. However, to run such test we need to start the application context and the tests themselves will talk to the database, so in the real-live scenarios such tests can be very slow. Fortunately, we should already have our repositories tested, so to test our logic layer we can just mock them:
+
+[source,java]
+----
+@ExtendWith(MockitoExtension.class)
+class FindPersonUcImplTest {
+
+    @InjectMocks
+    private FindPersonUcImpl findPersonUc;
+
+    @Mock
+    private PersonRepository personRepository;
+
+    @Test
+    void findAllPersons() {
+        // ...
+    }
+
+    @Test
+    void findPerson() {
+        // given
+        PersonEntity personEntity; // Initilize me!
+        when(personRepository.findById(1L)).thenReturn(Optional.of(personEntity));
+
+        // when
+        Optional<PersonEto> result = findPersonUc.findPerson(1L);
+
+        // then
+        assertThat(result).isPresent();
+        // Check if returned person is as expected.
     }
 }
 ----
@@ -444,6 +480,6 @@ Please inject the mappers and use them for the Entity/Eto mappings. Then, remove
 
 === Tests
 
-You can add some tests for the mappers. However, the mapping should be already covered by the existing tests, so it is perfectly fine to just re-run the existing tests and check if the application still works as expected.
+You can add some tests for the mappers. However, the mapping should be already covered by the existing tests, might be that some tests will need to be adapted, but it is perfectly fine to just re-run the existing tests and check if the application still works as expected.
 
 === link:task-service-services-layer.asciidoc[Next chapter: Task Service - Services Layer]
