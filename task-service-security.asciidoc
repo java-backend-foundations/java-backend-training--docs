@@ -8,13 +8,18 @@ toc::[]
 
 == Incorporating Necessary Dependency into Our Application
 
-To utilize Spring Security, it's imperative to integrate its security module into our application. This can be achieved by adding the following XML configuration to the `pom.xml` file:
+To utilize Spring Security, it's imperative to integrate security and its test module into our application. This can be achieved by adding the following XML configuration to the `pom.xml` file:
 
 [source,xml]
 ----
 <dependency>
   <groupId>org.springframework.boot</groupId>
   <artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+
+<dependency>
+  <groupId>org.springframework.security</groupId>
+  <artifactId>spring-security-test</artifactId>
 </dependency>
 ----
 
@@ -31,12 +36,11 @@ Upon executing the application, accessing any endpoint should prompt the login s
 ** Display an auto-generated user page when not authenticated*.
 ** Logout endpoint exists.
 ** Additionally enable Basic Authentication to facilitate testing endpoints easily with Postman.
-** Disable CSRF and configure frame options to be able to use h2-console
+** Disable CSRF (for h2-console and testing purpose) and configure frame options to be able to use h2-console
 
 [source,java]
 ----
-                .csrf(customizer -> customizer
-                        .ignoringRequestMatchers("/h2-console/**"))
+                .csrf(AbstractHttpConfigurer::disable)
                 .headers(customizer -> customizer
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
 ----
@@ -106,6 +110,19 @@ public class AccessControl {
 ----
 
 Please verify the correctness of these configurations.
+
+== Fix service test
+
+Right now all service sest with RestController will not work. It is like that because right now to reach all endpoints there need to be authorized user. One of solution is to execute endpoints with some defined user. We will benefit from test library added in first step. See example below.
+
+[source,java]
+----
+        mockMvc.perform(get("/person/")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .with(user("admin").password("admin").roles("ADMIN")))
+                .andExpect(status().isOk()).andExpect(jsonPath("$[0].id").value(person.id()))
+                .andExpect(jsonPath("$[0].email").value(person.email()));
+----
 
 == Optional Exercises (order is not relevant)
 
