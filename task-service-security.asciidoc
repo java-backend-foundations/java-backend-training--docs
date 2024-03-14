@@ -25,7 +25,7 @@ Upon executing the application, accessing any endpoint should prompt the login s
 === Creating a Security Configuration File and Basic SecurityFilterChain
 
 * Develop a configuration class named `SecurityConfiguration`. This class will house beans utilized during authentication and authorization.
-* Define a bean named `SecurityFilterChain` with the following specifications:
+* Define a bean `SecurityFilterChain` with the following specifications:
 ** Allow anonymous access to the endpoints */user* adn */h2-console/***.
 ** Mandate authentication for all other endpoints.
 ** Display an auto-generated user page when not authenticated*.
@@ -41,7 +41,7 @@ Upon executing the application, accessing any endpoint should prompt the login s
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
 ----
 
-* Establish a bean named `UserDetailsService` with the following features:
+* Establish a bean `UserDetailsService` with the following features:
 ** Operates in memory.
 ** Configures test users with selected usernames and passwords.
 * Validate if the specified configurations function as intended.
@@ -63,7 +63,7 @@ public class SecurityConfiguration {
 }
 ----
 
-== Authentication Configuration
+== Configuring Authorization
 
 At the beginning add annotation *@EnableMethodSecurity* to security configuration class.
 
@@ -76,8 +76,8 @@ Please configure the following users:
 
 Now, you are prepared to safeguard your business logic. Grant access to specific user groups by employing the appropriate `@PreAuthorize` annotation with the requisite permissions in your use case classes.
 
-* *ADMIN* can create and remove users.
-* *MAINTAINER* can list users and delete task lists.
+* *ADMIN* can create and remove persons.
+* *MAINTAINER* can list persons and delete task lists.
 * *CREATOR* can create and modify task lists and tasks.
 * Users without any assigned role are permitted to read tasks and task lists.
 
@@ -112,13 +112,14 @@ Please verify the correctness of these configurations.
 === Storing Users in a Database
 
 Up to this point, all user data has been stored in memory. Now, attempt to utilize a database to store user information. Adjust relevant components to retrieve data from the database during authentication.
-* Create an appropriate migration script to add users and roles (This step may be skipped if opting for the default Spring database schema).
+
+* Create an appropriate migration script to add users and roles. Default schema can be found under *org/springframework/security/core/userdetails/jdbc/users.ddl*
 * Replace the current `UserDetailsService` with one that interfaces with the database, such as *JdbcUserDetailsManager*.
 * Ensure that after adding a new user to the database, logging in with the new credentials is possible.
 
 === Utilizing Current User Context
 
-* Introduce a new endpoint to create a Person with a TaskList.
+* Introduce a new endpoint to create a Person.
 * Instead of relying on user-provided data, utilize the currently logged-in user for person details.
 * For simplicity, assume that emails follow the format: `[username]@example.com`.
 
