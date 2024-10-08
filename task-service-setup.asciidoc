@@ -18,7 +18,7 @@ Let's create a Spring Boot application using the Spring Initializer. Follow thes
 --
 - *Project*: Maven Project
 - *Language*: Java
-- *Spring Boot*: 3.2.3
+- *Spring Boot*: 3.3.4
 - *Group*: `com.capgemini.training`
 - *Artifact*: `todo-app`
 - *Package name*: `com.capgemini.training.todo`
