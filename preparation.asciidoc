@@ -89,7 +89,7 @@ Now that your development environment is ready, let's create a simple Spring Boo
 --
 - *Project*: Maven Project
 - *Language*: Java
-- *Spring Boot*: 3.2.3
+- *Spring Boot*: 3.3.4
 - *Group*: `com.capgemini.training`
 - *Artifact*: `sample`
 - *Package name*: `com.capgemini.training.sample`
