@@ -33,7 +33,7 @@ Upon executing the application, accessing any endpoint should prompt the login s
 * Define a bean `SecurityFilterChain` with the following specifications:
 ** Allow anonymous access to the endpoints */user* adn */h2-console/***.
 ** Mandate authentication for all other endpoints.
-** Display an auto-generated user page when not authenticated*.
+** Display an auto-generated user page when not authenticated.
 ** Logout endpoint exists.
 ** Additionally enable Basic Authentication to facilitate testing endpoints easily with Postman.
 ** Disable CSRF (for h2-console and testing purpose) and configure frame options to be able to use h2-console
@@ -53,6 +53,7 @@ Upon executing the application, accessing any endpoint should prompt the login s
 [source,java]
 ----
 @Configuration
+@EnableWebSecurity
 public class SecurityConfiguration {
     
     @Bean
@@ -67,64 +68,72 @@ public class SecurityConfiguration {
 }
 ----
 
+* Test configuration
+You should be able to login as configured users when trying any of protected endpoints via login form or Basic A
+
 == Configuring Authorization
 
 At the beginning add annotation *@EnableMethodSecurity* to security configuration class.
 
 Please configure the following users:
 
-* admin - with the role *ADMIN*.
+* admin - with the role *ADMIN* and *MAINTAINER*.
 * maintainer - with the role *MAINTAINER*.
-* creator - with the role *CREATOR*.
 * user - without any role.
 
-Now, you are prepared to safeguard your business logic. Grant access to specific user groups by employing the appropriate `@PreAuthorize` annotation with the requisite permissions in your use case classes.
+Now, you are prepared to safeguard your business logic. Grant access to specific user groups by employing the appropriate `@PreAuthorize` annotation (since in latest Spring version it is the one enabled by default) with the requisite permissions in your use case classes.
 
-* *ADMIN* can create and remove persons.
-* *MAINTAINER* can list persons and delete task lists.
-* *CREATOR* can create and modify task lists and tasks.
-* Users without any assigned role are permitted to read tasks and task lists.
+* *ADMIN* can create, remove and edit persons.
+* *MAINTAINER* can create, remove and edit task lists and tasks.
+* Users without any assigned role are permitted to read any data.
 
-You can define static fields and use them in annotations like
+It can be done using proper SpEL expression like:
+[source,java]
+----
+@PreAuthorize("hasRole('ADMIN')")
+----
+
+If you want to you can define static fields and use them in annotations like
 
 [source,java]
 ----
-@Component("R")
+@Component("Roles")
 public class AccessControl {
-
     public static String ROLE_ADMIN = "ADMIN";
-    public static String ROLE_MAINTAINER = "MAINTAINER";
-
-    // Implement
 }
 ----
 
 [source,java]
 ----
-    @Override
-    @PreAuthorize("hasRole(@R.ROLE_ADMIN)")
-    public void deletePerson(@NotNull Long id) {
-
-        personRepository.deleteById(id);
-    }
+    @PreAuthorize("hasRole(@Roles.ROLE_ADMIN)")
 ----
 
-Please verify the correctness of these configurations.
+Annotation for authorization can be places on Service level as in Controller level. It depends on use cases and practices used in project. In this training please put it on service implementation. Please verify the correctness of these configurations.
+* Invoke endpoint by user which do not has an access to it and check response
+* Do the same with user with proper roles and verify if correct action will be executed
 
 == Fix service test
 
-Right now all service sest with RestController will not work. It is like that because right now to reach all endpoints there need to be authorized user. One of solution is to execute endpoints with some defined user. We will benefit from test library added in first step. See example below.
+Right now all Service and some of UseCase tests will not work. They fails due to the fact that in all that endpoints we will execute service implementation which requires proper authorization. Please fix test:
+* UseCases test by providing user which should be used while executing test. Please add following annotation to test on method or class level. Please remember to adjust proper role
 
 [source,java]
 ----
-        mockMvc.perform(get("/person/")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .with(user("admin").password("admin").roles("ADMIN")))
-                .andExpect(status().isOk()).andExpect(jsonPath("$[0].id").value(person.id()))
-                .andExpect(jsonPath("$[0].email").value(person.email()));
+@WithMockUser(username = "test", roles = "ADMIN")
 ----
 
-== Optional Exercises (order is not relevant)
+* Service test can be fixed multiple way. We will extend test by adding user data and csrf in request. Some other ways can be seen in solution brach - see different test classes.  
+
+[source,java]
+----
+        mockMvc.perform(delete("/person/{id}", personId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .with(user("admin").roles("MAINTAINER"))
+                        .with(csrf()))
+                .andExpect(status().isOk());
+----
+
+== Bonus - additional tasks  (order is not relevant)
 
 === Storing Users in a Database
 
