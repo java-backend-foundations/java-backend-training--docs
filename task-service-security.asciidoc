@@ -1,4 +1,6 @@
 :toc: macro
+:sectnums:
+:sectnumlevels: 3
 
 = Task Service - Security
 
@@ -31,18 +33,18 @@ Upon executing the application, accessing any endpoint should prompt the login s
 
 * Develop a configuration class named `SecurityConfiguration`. This class will house beans utilized during authentication and authorization.
 * Define a bean `SecurityFilterChain` with the following specifications:
-** Allow anonymous access to the endpoints */user* adn */h2-console/***.
+** Allow anonymous access to the endpoints */user* and */h2-console/***.
 ** Mandate authentication for all other endpoints.
 ** Display an auto-generated user page when not authenticated.
 ** Logout endpoint exists.
 ** Additionally enable Basic Authentication to facilitate testing endpoints easily with Postman.
-** Disable CSRF (for h2-console and testing purpose) and configure frame options to be able to use h2-console
+** Disable CSRF (for h2-console and testing purposes) and configure frame options to be able to use h2-console.
 
 [source,java]
 ----
-                .csrf(AbstractHttpConfigurer::disable)
-                .headers(customizer -> customizer
-                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
+.csrf(AbstractHttpConfigurer::disable)
+.headers(customizer -> customizer
+.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
 ----
 
 * Establish a bean `UserDetailsService` with the following features:
@@ -55,12 +57,12 @@ Upon executing the application, accessing any endpoint should prompt the login s
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
-    
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         // Implement this
     }
-    
+
     @Bean
     public UserDetailsService userDetailsService() {
         // Implement this
@@ -69,11 +71,11 @@ public class SecurityConfiguration {
 ----
 
 * Test configuration
-You should be able to login as configured users when trying any of protected endpoints via login form or Basic A
+You should be able to login as configured users when trying any of the protected endpoints via login form or Basic Authentication.
 
 == Configuring Authorization
 
-At the beginning add annotation *@EnableMethodSecurity* to security configuration class.
+At the beginning, add annotation *@EnableMethodSecurity* to the security configuration class.
 
 Please configure the following users:
 
@@ -81,10 +83,10 @@ Please configure the following users:
 * maintainer - with the role *MAINTAINER*.
 * user - without any role.
 
-Now, you are prepared to safeguard your business logic. Grant access to specific user groups by employing the appropriate `@PreAuthorize` annotation (since in latest Spring version it is the one enabled by default) with the requisite permissions in your use case classes.
+Now, you are prepared to safeguard your business logic. Grant access to specific user groups by employing the appropriate `@PreAuthorize` annotation (since in the latest Spring version it is the one enabled by default) with the requisite permissions in your use case classes.
 
-* *ADMIN* can create, remove and edit persons.
-* *MAINTAINER* can create, remove and edit task lists and tasks.
+* *ADMIN* can create, remove, and edit persons.
+* *MAINTAINER* can create, remove, and edit task lists and tasks.
 * Users without any assigned role are permitted to read any data.
 
 It can be done using proper SpEL expression like:
@@ -93,7 +95,7 @@ It can be done using proper SpEL expression like:
 @PreAuthorize("hasRole('ADMIN')")
 ----
 
-If you want to you can define static fields and use them in annotations like
+If you want to, you can define static fields and use them in annotations like
 
 [source,java]
 ----
@@ -105,14 +107,15 @@ public class AccessControl {
 
 [source,java]
 ----
-    @PreAuthorize("hasRole(@Roles.ROLE_ADMIN)")
+@PreAuthorize("hasRole(@Roles.ROLE_ADMIN)")
 ----
 
-Annotation for authorization can be places on Service level as in Controller level. It depends on use cases and practices used in project. In this training please put it on service implementation. Please verify the correctness of these configurations.
-* Invoke endpoint by user which do not has an access to it and check response
-* Do the same with user with proper roles and verify if correct action will be executed
+Authorization annotations can be placed at the Service or Controller level. For this training, place them at the service implementation level. Verify the correctness of these configurations.
 
-== Fix service test
+* Attempt to invoke an endpoint with a user who lacks access to it and check the response.
+* Do the same with a user who has the proper roles and verify that the correct action is executed.
+
+== Fixing Service Tests
 
 Right now all Service and some of UseCase tests will not work. They fails due to the fact that in all that endpoints we will execute service implementation which requires proper authorization. Please fix test:
 * UseCases test by providing user which should be used while executing test. Please add following annotation to test on method or class level. Please remember to adjust proper role
@@ -122,18 +125,18 @@ Right now all Service and some of UseCase tests will not work. They fails due to
 @WithMockUser(username = "test", roles = "ADMIN")
 ----
 
-* Service test can be fixed multiple way. We will extend test by adding user data and csrf in request. Some other ways can be seen in solution brach - see different test classes.  
+* For Service tests, multiple approaches are possible. Extend the tests to include user data and CSRF in the request. Additional examples are available in the solution branch's different test classes.
 
 [source,java]
 ----
-        mockMvc.perform(delete("/person/{id}", personId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .with(user("admin").roles("MAINTAINER"))
-                        .with(csrf()))
+mockMvc.perform(delete("/person/{id}", personId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(user("admin").roles("MAINTAINER"))
+                .with(csrf()))
                 .andExpect(status().isOk());
 ----
 
-== Bonus - additional tasks  (order is not relevant)
+== Bonus - Additional Tasks (order is not important)
 
 === Storing Users in a Database
 
