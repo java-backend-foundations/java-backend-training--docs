@@ -1,4 +1,6 @@
 :toc: macro
+:sectnums:
+:sectnumlevels: 3
 
 = Task Service - Business Logic Layer
 
@@ -482,4 +484,4 @@ Please inject the mappers and use them for the Entity/Eto mappings. Then, remove
 
 You can add some tests for the mappers. However, the mapping should be already covered by the existing tests, might be that some tests will need to be adapted, but it is perfectly fine to just re-run the existing tests and check if the application still works as expected.
 
-=== link:task-service-services-layer.asciidoc[Next chapter: Task Service - Services Layer]
+= link:task-service-services-layer.asciidoc[Next chapter: Task Service - Services Layer]

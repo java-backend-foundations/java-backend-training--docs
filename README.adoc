@@ -1,16 +1,33 @@
 :toc: macro
+:sectnums:
+:sectnumlevels: 2
+
 = Java Backend Training - Lab Instructions
+
+Welcome to the Java Backend Training labs! This guide provides links and instructions to walk you through the setup and implementation of the _Task Service_ application. Each section focuses on a specific layer or component, following best practices for building a robust and maintainable Java backend.
 
 toc::[]
 
 == Preparation
 
-- link:preparation.asciidoc[Preparation]
+Before beginning the labs, please complete the link:preparation.asciidoc[Preparation] steps to ensure your environment is ready.
 
-== Training Instructions
+== Training Modules
 
-- link:task-service-setup.asciidoc[Setup]
-- link:task-service.asciidoc[Task Service]
-- link:task-service-dataaccess-layer.asciidoc[Task Service - Data Access Layer]
-- link:task-service-logic-layer.asciidoc[Task Service - Business Logic Layer]
-- link:task-service-services-layer.asciidoc[Task Service - Services Layer]
+The training is structured to help you build the _Task Service_ in layers, progressing from setup to business logic, service integration, and security. Follow the modules below in sequence:
+
+. link:task-service-setup.asciidoc[Setup]: Set up the foundational elements needed to start working on the Task Service application.
+. link:task-service.asciidoc[Task Service]: Understand the purpose of the Task Service and the key features it will provide.
+. link:task-service-dataaccess-layer.asciidoc[Data Access Layer]: Define the database schema and create the entities for the data access layer.
+. link:task-service-logic-layer.asciidoc[Business Logic Layer]: Implement the core business logic for managing tasks and related operations.
+. link:task-service-services-layer.asciidoc[Services Layer]: Integrate services and configure interaction points within the application.
+. link:task-service-security.asciidoc[Security]: Apply security best practices to protect sensitive data and restrict access to authorized users.
+
+
+== Additional Notes
+
+Throughout these labs, you will gain hands-on experience with Java backend principles, including data persistence, business logic encapsulation, service-oriented architecture, and application security.
+
+---
+
+This revised structure provides clear instructions, making it easier for participants to understand the purpose and progression of each module.

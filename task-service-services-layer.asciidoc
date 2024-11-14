@@ -1,10 +1,12 @@
 :toc: macro
+:sectnums:
+:sectnumlevels: 3
 
 = Task Service - Services Layer
 
-toc::[]
-
 In this chapter we are going to create service layer which exposes backend functionality.
+
+toc::[]
 
 == Implement the `PersonService`
 
@@ -169,4 +171,4 @@ objectMapper.registerModule(new JavaTimeModule());
 This allows your `ObjectMapper` to correctly serialize and deserialize Java 8 date/time types.
 
 
-link:task-service-security.asciidoc[Next chapter: Task Service - Security]
+= link:task-service-security.asciidoc[Next chapter: Task Service - Security]
