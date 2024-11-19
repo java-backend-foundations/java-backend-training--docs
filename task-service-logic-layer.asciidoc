@@ -484,4 +484,11 @@ Please inject the mappers and use them for the Entity/Eto mappings. Then, remove
 
 You can add some tests for the mappers. However, the mapping should be already covered by the existing tests, might be that some tests will need to be adapted, but it is perfectly fine to just re-run the existing tests and check if the application still works as expected.
 
+NOTE: If you want to incorporate mappers to be used in existing unit tests, you can consider using of @Spy like shown below. Remember, don't use @Autowired in tests annotated with @ExtendWith(MockitoExtension.class), because in unit tests there is no spring context started and @Autowired will not work.
+[source,java]
+----
+    @Spy
+    private TaskItemMapper taskItemMapper = new TaskItemMapperImpl();
+----
+
 = link:task-service-services-layer.asciidoc[Next chapter: Task Service - Services Layer]
